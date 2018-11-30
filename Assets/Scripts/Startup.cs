@@ -16,6 +16,8 @@ public class Startup : MonoBehaviour {
         //mov = new Movin(transform, "json/anim-test7");
         //mov = new Movin(transform, "json/anim-test8");
         mov = new Movin(transform, "json/anim-test9");
+
+        //mov = new Movin(transform, "json/tester");
         mov.Play();
     }
 

@@ -43,6 +43,7 @@ public class Movin
 
     public Movin(Transform parent, string path)
     {
+        
         gameObject = new GameObject("body - " + path);
         transform.SetParent(parent, false);
         transform.localScale *= scaleFactor;
@@ -52,19 +53,23 @@ public class Movin
         totalFrames = content.op;
         layers = new BodyLayer[content.layers.Length];
 
+        if (content.layers.Length <= 0) { Debug.Log("NO LAYERS, ABORT..."); return; }
+
+        int indexOffset = (content.layers[0].ind > 1) ? content.layers[0].ind - 1 : 0;
 
         for (int i = 0; i < content.layers.Length; i++)
         {
-
             BodyLayer layer = new BodyLayer(this, content.layers[i]);
-            //layers[i] = layer;
-            layers[layer.content.ind -1] = layer;
+            layers[layer.content.ind - indexOffset - 1] = layer;
+
+            //Debug.Log("layer len:  " + layers.Length + "    ind:  " + layer.content.ind);
+
         }
 
         for (int i = 0; i < content.layers.Length; i++)
         {
-            int p = layers[i].content.parent;
-            if (p == 0)
+            int p = layers[i].content.parent - indexOffset;     // Should it be minus offset?
+            if (p <= 0)
                 continue;
 
             layers[i].transform.SetParent(layers[p - 1].transform, false);

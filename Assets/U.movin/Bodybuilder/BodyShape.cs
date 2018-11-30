@@ -47,6 +47,7 @@ namespace U.movin
         {
 
             this.content = content;
+            if (content.points == null) { Debug.Log("NO PTS ARRAY"); return; }
             if (content.points.Length <= 1) { Debug.Log("DON'T DRAW SHAPE -> NO PTS"); return; }
 
             this.layer = layer;
@@ -82,13 +83,15 @@ namespace U.movin
             renderer = gameObject.AddComponent<MeshRenderer>();
             //Debug.Log("sort:  " + renderer.sortingOrder);
 
-            renderer.material = new Material(Shader.Find("Sprites/Default"));
-            //renderer.material = new Material(Shader.Find("Unlit/Vector"));
-
+            //renderer.material = new Material(Shader.Find("Sprites/Default"));
+            renderer.material = new Material(Shader.Find("Unlit/Vector"));
             //renderer.material.color = new Color(item.c[0], item.c[1], item.c[2]);
 
-            Color stClr = new Color(content.strokeColor[0], content.strokeColor[1], content.strokeColor[2]);
-            Color flClr = new Color(content.fillColor[0], content.fillColor[1], content.fillColor[2]);
+            Color stClr;
+            stClr = (content.strokeColor == null) ? new Color(1, 1, 1) : new Color(content.strokeColor[0], content.strokeColor[1], content.strokeColor[2]);
+            
+            Color flClr;
+            flClr = (content.fillColor == null) ? new Color(1, 1, 1) : new Color(content.fillColor[0], content.fillColor[1], content.fillColor[2]);
 
             SolidFill fill = content.fillHidden ? null : new SolidFill() { Color = flClr };
             Stroke stroke = content.strokeHidden ? null : new Stroke() { Color = stClr, HalfThickness = content.strokeWidth * strokeMultiplier };
