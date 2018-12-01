@@ -11,6 +11,7 @@ namespace U.movin
             get { return gameObject.transform; }
         }
 
+        public int sort;
         public Movin movin;
         public BodymovinLayer content;
         public MovinShape[] shapes;
@@ -33,10 +34,11 @@ namespace U.movin
         public bool opacityAnimated = false;
 
 
-        public MovinLayer(Movin movin, BodymovinLayer layer)
+        public MovinLayer(Movin movin, BodymovinLayer layer, int sort = 0)
         {
             this.movin = movin;
             this.content = layer;
+            this.sort = sort;
 
             gameObject = new GameObject(content.ind + "  " + content.nm);
             transform.SetParent(movin.transform, false);

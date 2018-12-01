@@ -43,11 +43,13 @@ public class Movin
     public bool loop = true;
 
     public float strokeScale;
+    public int sort;
     public VectorUtils.TessellationOptions options;
 
-    public Movin(Transform parent, string path, float strokeScale = 0.6f)
+    public Movin(Transform parent, string path, int sort = 0, float strokeScale = 0.6f)
     {
 
+        this.sort = sort;
         this.strokeScale = strokeScale;
 
         gameObject = new GameObject("body - " + path);
@@ -78,7 +80,7 @@ public class Movin
         int highestIndex = 0;
         for (int i = 0; i < content.layers.Length; i++)
         {
-            MovinLayer layer = new MovinLayer(this, content.layers[i]);
+            MovinLayer layer = new MovinLayer(this, content.layers[i], content.layers.Length - i);
             layers[i] = layer;
 
             highestIndex = layer.content.ind > highestIndex ? layer.content.ind : highestIndex;

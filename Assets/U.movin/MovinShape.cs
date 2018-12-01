@@ -93,7 +93,7 @@ namespace U.movin
             //renderer.material = new Material(Shader.Find("Unlit/Vector"));
             
             sorting = gameObject.AddComponent<SortingGroup>();
-
+            sorting.sortingOrder = movin.sort + layer.sort;
 
 
             /* SETUP VECTOR */

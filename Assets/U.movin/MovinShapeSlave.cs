@@ -46,6 +46,7 @@ namespace U.movin
             renderer.material = master.renderer.material;
 
             sorting = gameObject.AddComponent<UnityEngine.Rendering.SortingGroup>();
+            sorting.sortingOrder = master.sorting.sortingOrder;
 
 
             /* SETUP VECTOR */
