@@ -39,7 +39,7 @@ namespace U.movin
 
         public BodymovinShapePath path;
 
-        public BodyShapeSlave(BodyShape master, BodymovinShapePath path, float strokeMultiplier = 1f)
+        public BodyShapeSlave(BodyShape master, BodymovinShapePath path, float strokeScale = 1f)
         {
 
             this.master = master;
@@ -72,7 +72,7 @@ namespace U.movin
             /* SETUP VECTOR */
 
             fill = master.content.fillHidden || master.content.fillColor == null ? null : new SolidFill() { Color = master.fill.Color };
-            stroke = master.content.strokeHidden || master.content.strokeColor == null ? null : new Stroke() { Color = master.stroke.Color, HalfThickness = master.content.strokeWidth * strokeMultiplier };
+            stroke = master.content.strokeHidden || master.content.strokeColor == null ? null : new Stroke() { Color = master.stroke.Color, HalfThickness = master.content.strokeWidth * strokeScale };
             props = new PathProperties() { Stroke = stroke };
 
             shape = new Shape() {

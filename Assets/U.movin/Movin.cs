@@ -1,6 +1,7 @@
 ﻿
 using UnityEngine;
 using U.movin;
+using Unity.VectorGraphics;
 
 namespace U.movin
 {
@@ -41,10 +42,14 @@ public class Movin
     public float frame = 0;                 // Animation frame
     public bool loop = true;
 
+    public float strokeScale;
+    public VectorUtils.TessellationOptions options;
 
-    public Movin(Transform parent, string path)
+    public Movin(Transform parent, string path, float strokeScale = 0.6f)
     {
-        
+
+        this.strokeScale = strokeScale;
+
         gameObject = new GameObject("body - " + path);
         transform.SetParent(parent, false);
         transform.localScale *= scaleFactor;
@@ -54,7 +59,18 @@ public class Movin
         totalFrames = content.op;
         layers = new BodyLayer[content.layers.Length];
         
-        if (content.layers.Length <= 0) { Debug.Log("NO LAYERS, ABORT..."); return; }
+        if (content.layers.Length <= 0) { Debug.Log(">>>> NO LAYERS, ABORT..."); return; }
+
+
+        /* ----- SHAPE OPTIONS ----- */
+
+        options = new VectorUtils.TessellationOptions()
+        {
+            StepDistance = 1000.0f,
+            MaxCordDeviation = 0.05f,
+            MaxTanAngleDeviation = 0.05f,
+            SamplingStepSize = 0.01f
+        };
 
 
         /* ----- CREATE LAYERS ----- */

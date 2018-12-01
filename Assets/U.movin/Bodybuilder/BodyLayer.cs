@@ -79,7 +79,7 @@ namespace U.movin
             int j = 0;
             for (int i = content.shapes.Length - 1; i >= 0; i--)
             {
-                BodyShape shape = new BodyShape(this, content.shapes[i], 0.85f);
+                BodyShape shape = new BodyShape(this, content.shapes[i]);
                 shapes[i] = shape;
 
                 //shape.transform.localPosition += new Vector3(0, 0, -32 * j);

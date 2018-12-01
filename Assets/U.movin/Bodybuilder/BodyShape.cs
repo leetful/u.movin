@@ -47,7 +47,7 @@ namespace U.movin
 
         public BodymovinAnimatedShapeProperties[] motionSet;
 
-        public BodyShape(BodyLayer layer, BodymovinShape content, float strokeMultiplier = 1f)
+        public BodyShape(BodyLayer layer, BodymovinShape content)
         {
 
             this.content = content;
@@ -57,10 +57,13 @@ namespace U.movin
             this.body = layer.body;
             Transform parent = layer.transform;
 
+
+            /* FIRST SHAPE PROPS */
+
             points = (BodyPoint[])content.paths[0].points.Clone();
-            
             motionSet = content.paths[0].animSets;
             closed = content.paths[0].closed;
+
 
 
             /* ANIM SETUP */
@@ -70,7 +73,8 @@ namespace U.movin
             MotionSetup(ref fillColorAnimated, ref mfillc, content.fillColorSets);
 
 
-            /* GAMEOBJECT */
+
+            /* GAMEOBJECT, MESH, MATERIAL */
 
             gameObject = new GameObject(content.item.ty + " pts: " + points.Length + "  closed: " + closed);
             transform.SetParent(parent, false);
@@ -93,7 +97,7 @@ namespace U.movin
             Color flClr = (content.fillColor == null) ? new Color(1, 1, 1) : new Color(content.fillColor[0], content.fillColor[1], content.fillColor[2]);
 
             fill = content.fillHidden || content.fillColor == null ? null : new SolidFill() { Color = flClr };
-            stroke = content.strokeHidden || content.strokeColor == null ? null : new Stroke() { Color = stClr, HalfThickness = content.strokeWidth * strokeMultiplier };
+            stroke = content.strokeHidden || content.strokeColor == null ? null : new Stroke() { Color = stClr, HalfThickness = content.strokeWidth * body.strokeScale };
             props = new PathProperties() { Stroke = stroke };
 
             shape = new Shape() {
@@ -102,13 +106,7 @@ namespace U.movin
                 FillTransform = Matrix2D.identity
             };
 
-            options = new VectorUtils.TessellationOptions() {
-                StepDistance = 1000.0f,
-                MaxCordDeviation = 0.05f,
-                MaxTanAngleDeviation = 0.05f,
-                SamplingStepSize = 0.01f
-            };
-
+            options = body.options;
 
             scene = new Scene() {
                 Root = new SceneNode() { Shapes = new List<Shape> { shape } }
@@ -122,7 +120,7 @@ namespace U.movin
 
             slaves = new BodyShapeSlave[content.paths.Length - 1];
             for (int i = 1; i <= slaves.Length; i++) {
-                slaves[i - 1] = new BodyShapeSlave(this, content.paths[i], strokeMultiplier);
+                slaves[i - 1] = new BodyShapeSlave(this, content.paths[i], body.strokeScale);
             }
             
         }
