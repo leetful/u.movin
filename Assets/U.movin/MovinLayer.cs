@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace U.movin
 {
-    public class BodyLayer
+    public class MovinLayer
     {
         public GameObject gameObject;
         public Transform transform
@@ -11,9 +11,9 @@ namespace U.movin
             get { return gameObject.transform; }
         }
 
-        public Movin body;
+        public Movin movin;
         public BodymovinLayer content;
-        public BodyShape[] shapes;
+        public MovinShape[] shapes;
 
         public MotionProps mpos;
         public MotionProps mscale;
@@ -33,15 +33,15 @@ namespace U.movin
         public bool opacityAnimated = false;
 
 
-        public BodyLayer(Movin body, BodymovinLayer layer)
+        public MovinLayer(Movin movin, BodymovinLayer layer)
         {
-            this.body = body;
+            this.movin = movin;
             this.content = layer;
 
             gameObject = new GameObject(content.ind + "  " + content.nm);
-            transform.SetParent(body.transform, false);
+            transform.SetParent(movin.transform, false);
 
-            positionOffset = new Vector3(body.content.w / 2, -(body.content.h / 2), 0);
+            positionOffset = new Vector3(movin.content.w / 2, -(movin.content.h / 2), 0);
 
             transform.localPosition = content.position - positionOffset;
             transform.localRotation = content.rotation;
@@ -74,12 +74,12 @@ namespace U.movin
 
             //Debug.Log("layer index:  " + content.ind + "   parent:  " + content.parent);
 
-            shapes = new BodyShape[content.shapes.Length];
+            shapes = new MovinShape[content.shapes.Length];
 
             int j = 0;
             for (int i = content.shapes.Length - 1; i >= 0; i--)
             {
-                BodyShape shape = new BodyShape(this, content.shapes[i]);
+                MovinShape shape = new MovinShape(this, content.shapes[i]);
                 shapes[i] = shape;
 
                 //shape.transform.localPosition += new Vector3(0, 0, -32 * j);
@@ -135,7 +135,7 @@ namespace U.movin
 
             /* ----- SEND DOWN UPDATES ----- */
 
-            foreach (BodyShape shape in shapes)
+            foreach (MovinShape shape in shapes)
             {
                 shape.Update(frame);
             }
@@ -214,7 +214,7 @@ namespace U.movin
             } else if (set == content.rotationZSets) {
                 finalRotation.z = Value1(m, set, ease);
             } else if (set == content.opacitySets) {
-                foreach (BodyShape s in shapes) {
+                foreach (MovinShape s in shapes) {
                     s.UpdateOpacity(Value1(m, set, ease));
                 }
             }
@@ -246,7 +246,7 @@ namespace U.movin
             if (rotationZAnimated) { SetKeyframe(ref mrotz, content.rotationZSets, 0); }
             if (opacityAnimated) { SetKeyframe(ref mopacity, content.opacitySets, 0); }
 
-            foreach (BodyShape shape in shapes)
+            foreach (MovinShape shape in shapes)
             {
                 shape.ResetKeyframes();
             }

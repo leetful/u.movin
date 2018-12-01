@@ -5,7 +5,7 @@ using Unity.VectorGraphics;
 
 namespace U.movin
 {
-    public class BodyShape
+    public class MovinShape
     {
 
         public GameObject gameObject;
@@ -14,7 +14,7 @@ namespace U.movin
             get { return gameObject.transform; }
         }
 
-        public BodyShapeSlave[] slaves;
+        public MovinShapeSlave[] slaves;
         public BodymovinShape content;
         public Shape shape;
         public Scene scene;
@@ -28,8 +28,8 @@ namespace U.movin
         public BodyPoint[] startPoints;
         public BodyPoint[] endPoints;
 
-        public Movin body;
-        public BodyLayer layer;
+        public Movin movin;
+        public MovinLayer layer;
         public BezierPathSegment[] segments;
         public bool closed;
 
@@ -47,14 +47,14 @@ namespace U.movin
 
         public BodymovinAnimatedShapeProperties[] motionSet;
 
-        public BodyShape(BodyLayer layer, BodymovinShape content)
+        public MovinShape(MovinLayer layer, BodymovinShape content)
         {
 
             this.content = content;
             if (content.paths == null || content.paths.Length < 1) { Debug.Log("DON'T DRAW SHAPE -> NO PTS"); return; }
             
             this.layer = layer;
-            this.body = layer.body;
+            this.movin = layer.movin;
             Transform parent = layer.transform;
 
 
@@ -97,7 +97,7 @@ namespace U.movin
             Color flClr = (content.fillColor == null) ? new Color(1, 1, 1) : new Color(content.fillColor[0], content.fillColor[1], content.fillColor[2]);
 
             fill = content.fillHidden || content.fillColor == null ? null : new SolidFill() { Color = flClr };
-            stroke = content.strokeHidden || content.strokeColor == null ? null : new Stroke() { Color = stClr, HalfThickness = content.strokeWidth * body.strokeScale };
+            stroke = content.strokeHidden || content.strokeColor == null ? null : new Stroke() { Color = stClr, HalfThickness = content.strokeWidth * movin.strokeScale };
             props = new PathProperties() { Stroke = stroke };
 
             shape = new Shape() {
@@ -106,7 +106,7 @@ namespace U.movin
                 FillTransform = Matrix2D.identity
             };
 
-            options = body.options;
+            options = movin.options;
 
             scene = new Scene() {
                 Root = new SceneNode() { Shapes = new List<Shape> { shape } }
@@ -118,9 +118,9 @@ namespace U.movin
 
             // ADDITIONAL SHAPE PATHS 
 
-            slaves = new BodyShapeSlave[content.paths.Length - 1];
+            slaves = new MovinShapeSlave[content.paths.Length - 1];
             for (int i = 1; i <= slaves.Length; i++) {
-                slaves[i - 1] = new BodyShapeSlave(this, content.paths[i], body.strokeScale);
+                slaves[i - 1] = new MovinShapeSlave(this, content.paths[i], movin.strokeScale);
             }
             
         }
@@ -358,7 +358,7 @@ namespace U.movin
                 props.Stroke = stroke;
 
                 if (slaves == null) { return; }
-                foreach (BodyShapeSlave slave in slaves)
+                foreach (MovinShapeSlave slave in slaves)
                 {
                     slave.UpdateStrokeColor(c);
                 }
@@ -376,7 +376,7 @@ namespace U.movin
                 shape.Fill = fill;
 
                 if (slaves == null) { return; }
-                foreach (BodyShapeSlave slave in slaves)
+                foreach (MovinShapeSlave slave in slaves)
                 {
                     slave.UpdateFillColor(c);
                 }
@@ -415,7 +415,7 @@ namespace U.movin
             if (fillColorAnimated) { SetKeyframe(ref mfillc, content.fillColorSets, 0); }
 
             if (slaves == null) { return; }
-            foreach (BodyShapeSlave slave in slaves) {
+            foreach (MovinShapeSlave slave in slaves) {
                 slave.ResetKeyframes();
             }
         }

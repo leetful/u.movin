@@ -5,7 +5,7 @@ using Unity.VectorGraphics;
 
 namespace U.movin
 {
-    public class BodyShapeSlave
+    public class MovinShapeSlave
     {
         public GameObject gameObject;
         public Transform transform
@@ -13,7 +13,7 @@ namespace U.movin
             get { return gameObject.transform; }
         }
 
-        public BodyShape master;
+        public MovinShape master;
         public BodymovinShape content;
         public Shape shape;
         public Scene scene;
@@ -39,7 +39,7 @@ namespace U.movin
 
         public BodymovinShapePath path;
 
-        public BodyShapeSlave(BodyShape master, BodymovinShapePath path, float strokeScale = 1f)
+        public MovinShapeSlave(MovinShape master, BodymovinShapePath path, float strokeScale = 1f)
         {
 
             this.master = master;

@@ -30,8 +30,8 @@ public class Movin
 
     public BodymovinContent content;
     public Updater updater;
-    private BodyLayer[] layers;
-    private BodyLayer[] layersByIndex;
+    private MovinLayer[] layers;
+    private MovinLayer[] layersByIndex;
 
     public static float scaleFactor = 0.1f;
     public bool playing = false;
@@ -57,7 +57,7 @@ public class Movin
         content = BodymovinContent.init(path);
         frameRate = content.fr;
         totalFrames = content.op;
-        layers = new BodyLayer[content.layers.Length];
+        layers = new MovinLayer[content.layers.Length];
         
         if (content.layers.Length <= 0) { Debug.Log(">>>> NO LAYERS, ABORT..."); return; }
 
@@ -78,7 +78,7 @@ public class Movin
         int highestIndex = 0;
         for (int i = 0; i < content.layers.Length; i++)
         {
-            BodyLayer layer = new BodyLayer(this, content.layers[i]);
+            MovinLayer layer = new MovinLayer(this, content.layers[i]);
             layers[i] = layer;
 
             highestIndex = layer.content.ind > highestIndex ? layer.content.ind : highestIndex;
@@ -87,7 +87,7 @@ public class Movin
 
         /* ----- ARRAY BY INDEX ----- */
 
-        layersByIndex = new BodyLayer[highestIndex + 1];
+        layersByIndex = new MovinLayer[highestIndex + 1];
         for (int i = 0; i < content.layers.Length; i++)
         {
             layersByIndex[layers[i].content.ind] = layers[i];
@@ -150,7 +150,7 @@ public class Movin
         }
 
 
-        foreach (BodyLayer layer in layers)
+        foreach (MovinLayer layer in layers)
         {
             layer.Update(frame);
         }
@@ -161,7 +161,7 @@ public class Movin
     {
         time = 0;
 
-        foreach (BodyLayer layer in layers)
+        foreach (MovinLayer layer in layers)
         {
             layer.ResetKeyframes();
         }
