@@ -45,31 +45,34 @@ namespace U.movin
         public MotionProps mstrokec;
         public MotionProps mfillc;
 
+        public BodymovinAnimatedShapeProperties[] motionSet;
+
         public BodyShape(BodyLayer layer, BodymovinShape content, float strokeMultiplier = 1f)
         {
 
             this.content = content;
-            if (content.points == null) { Debug.Log("NO PTS ARRAY"); return; }
-            if (content.points.Length <= 1) { Debug.Log("DON'T DRAW SHAPE -> NO PTS"); return; }
-
+            if (content.paths == null || content.paths.Length < 1) { Debug.Log("DON'T DRAW SHAPE -> NO PTS"); return; }
+            
             this.layer = layer;
             this.body = layer.body;
             Transform parent = layer.transform;
 
-            points = (BodyPoint[])content.points.Clone();
-            closed = content.closed;
+            points = (BodyPoint[])content.paths[0].points.Clone();
+            
+            motionSet = content.paths[0].animSets;
+            closed = content.paths[0].closed;
 
 
             /* ANIM SETUP */
 
-            MotionSetup(ref animated, ref motion, content.animSets);
+            MotionSetup(ref animated, ref motion, motionSet);
             MotionSetup(ref strokeColorAnimated, ref mstrokec, content.strokeColorSets);
             MotionSetup(ref fillColorAnimated, ref mfillc, content.fillColorSets);
 
 
             /* GAMEOBJECT */
 
-            gameObject = new GameObject(content.item.ty + " pts: " + points.Length + "  closed: " + content.closed);
+            gameObject = new GameObject(content.item.ty + " pts: " + points.Length + "  closed: " + closed);
             transform.SetParent(parent, false);
             transform.localPosition = -layer.content.anchorPoint;
 
@@ -113,6 +116,15 @@ namespace U.movin
 
             UpdateMesh();
 
+
+
+            // ADDITIONAL SHAPE PATHS 
+
+            slaves = new BodyShapeSlave[content.paths.Length - 1];
+            for (int i = 1; i <= slaves.Length; i++) {
+                slaves[i - 1] = new BodyShapeSlave(this, content.paths[i], strokeMultiplier);
+            }
+            
         }
 
         
@@ -213,7 +225,7 @@ namespace U.movin
             /* ----- ANIM PROPS ----- */
 
             if (animated && !motion.completed) {
-                UpdateProperty(frame, ref motion, content.animSets);
+                UpdateProperty(frame, ref motion, motionSet);
             }
             if (strokeColorAnimated && !mstrokec.completed) {
                 UpdateProperty(frame, ref mstrokec, content.strokeColorSets);
@@ -275,10 +287,18 @@ namespace U.movin
 
             for (int i = 0; i < points.Length; i++)
             {
-                points[i].p = startPoints[i].p + ((endPoints[i].p - startPoints[i].p) * ease);
-                points[i].i = startPoints[i].i + ((endPoints[i].i - startPoints[i].i) * ease);
-                points[i].o = startPoints[i].o + ((endPoints[i].o - startPoints[i].o) * ease);
-
+                if (m.percent < 0)
+                {
+                    // BACK TO START OF KEYFRAME
+                    points[i].p = startPoints[i].p;
+                    points[i].i = startPoints[i].i;
+                    points[i].o = startPoints[i].o;
+                } else
+                {
+                    points[i].p = startPoints[i].p + ((endPoints[i].p - startPoints[i].p) * ease);
+                    points[i].i = startPoints[i].i + ((endPoints[i].i - startPoints[i].i) * ease);
+                    points[i].o = startPoints[i].o + ((endPoints[i].o - startPoints[i].o) * ease);
+                }
             }
 
             
@@ -321,6 +341,8 @@ namespace U.movin
 
             /* ----- CUBIC BEZIER EASE ----- */
 
+            //Debug.Log("to:  " + m.currentOutTangent + "   ti:  " + m.nextInTangent);
+            
             float ease = Ease.CubicBezier(Vector2.zero, m.currentOutTangent, m.nextInTangent, Vector2.one, m.percent);
 
 
@@ -336,8 +358,15 @@ namespace U.movin
 
                 stroke.Color = c;
                 props.Stroke = stroke;
-                
+
+                if (slaves == null) { return; }
+                foreach (BodyShapeSlave slave in slaves)
+                {
+                    slave.UpdateStrokeColor(c);
+                }
+
             } else if (set == content.fillColorSets) {
+                //Debug.Log("diff:  " + (set[m.key].e.x - set[m.key].s.x).ToString("F4") + "   fnl:  " + (set[m.key].s + ((set[m.key].e - set[m.key].s) * ease)) + "   percent:  " + m.percent + "   ease:  " + ease);
 
                 Color c = fill.Color;
                 Vector3 v = Value3(m, set, ease);
@@ -347,7 +376,12 @@ namespace U.movin
 
                 fill.Color = c;
                 shape.Fill = fill;
-               
+
+                if (slaves == null) { return; }
+                foreach (BodyShapeSlave slave in slaves)
+                {
+                    slave.UpdateFillColor(c);
+                }
             }
 
         }
@@ -360,15 +394,29 @@ namespace U.movin
                     set[m.key].s : set[m.key].s + ((set[m.key].e - set[m.key].s) * ease);
         }
 
+        //public Vector3 Value3b(MotionProps m, BodymovinAnimatedProperties[] set, float ease)
+        //{
+        //    float x = m.percent < 0 ?
+        //            set[m.key].s.x : set[m.key].s.x + ((set[m.key].e.x - set[m.key].s.x) * ease);
+
+        //    float y = m.percent < 0 ?
+        //            set[m.key].s.y : set[m.key].s.y + ((set[m.key].e.y - set[m.key].s.y) * ease);
+
+        //    float z = m.percent < 0 ?
+        //            set[m.key].s.z : set[m.key].s.z + ((set[m.key].e.z - set[m.key].s.z) * ease);
+
+        //    return new Vector3(x, y, z);
+        //}
 
 
 
         public void ResetKeyframes()
         {
-            if (animated) { SetKeyframe(ref motion, content.animSets, 0); }
+            if (animated) { SetKeyframe(ref motion, motionSet, 0); }
             if (strokeColorAnimated) { SetKeyframe(ref mstrokec, content.strokeColorSets, 0); }
             if (fillColorAnimated) { SetKeyframe(ref mfillc, content.fillColorSets, 0); }
 
+            if (slaves == null) { return; }
             foreach (BodyShapeSlave slave in slaves) {
                 slave.ResetKeyframes();
             }
@@ -427,7 +475,7 @@ namespace U.movin
             prop.currentOutTangent = set[k].o;
             prop.nextInTangent = set[k].i;
 
-            if (set == content.animSets)
+            if (set == motionSet)
             {
                 startPoints = set[k].pts[0];
                 endPoints = set[k].pts[1];

@@ -239,9 +239,24 @@ namespace U.movin
 
         public static void ParseItems(ref BodymovinShape b, JSONNode n)
         {
-            int pathCount = 0;
             int j = 0;
             b.it = new BodymovinShapeItem[n["it"].Count];
+
+
+
+            /* ----- CAPTURE MULTIPLE PATHS ----- */
+
+            int pathCount = 0;
+            foreach (JSONNode d in n["it"])
+            {
+                if (d["ty"] == "sh") { pathCount += 1; }
+            }
+
+            b.paths = new BodymovinShapePath[pathCount];
+            pathCount = 0;
+
+
+            /* --------- */
 
             foreach (JSONNode d in n["it"])
             {
@@ -267,7 +282,8 @@ namespace U.movin
                             o = new Vector2[d["ks"]["k"]["o"].Count],
                             v = new Vector2[d["ks"]["k"]["v"].Count],
                         }
-                    }
+                    },
+                    path = new BodymovinShapePath { }
                 };
 
 
@@ -284,9 +300,13 @@ namespace U.movin
                         i.cSets[c] = new BodymovinAnimatedProperties
                         {
                             t = k["t"],
-                            i = new Vector2(k["i"]["x"][0].AsFloat, k["i"]["y"][0].AsFloat),
-                            o = new Vector2(k["o"]["x"][0].AsFloat, k["o"]["y"][0].AsFloat),
+                            //i = new Vector2(k["i"]["x"][0].AsFloat, k["i"]["y"][0].AsFloat),
+                            //o = new Vector2(k["o"]["x"][0].AsFloat, k["o"]["y"][0].AsFloat),
 
+                            // Clamp tangents? - FIX
+                            i = new Vector2(Mathf.Clamp(k["i"]["x"][0].AsFloat, -1, 1), Mathf.Clamp(k["i"]["y"][0].AsFloat, -1, 1)),
+                            o = new Vector2(Mathf.Clamp(k["o"]["x"][0].AsFloat, -1, 1), Mathf.Clamp(k["o"]["x"][0].AsFloat, -1, 1)),
+                            
                             s = new Vector3(k["s"][0].AsFloat, k["s"][1].AsFloat, k["s"][2].AsFloat),
                             e = new Vector3(k["e"][0].AsFloat, k["e"][1].AsFloat, k["e"][2].AsFloat)
                         };
@@ -315,17 +335,19 @@ namespace U.movin
 
                 if (i.ks.pts.Length > 0)
                 {
-                    b.points = i.ks.pts;
+                    
+                    i.path.points = i.ks.pts;
+                    //Debug.Log("path verts:  " + i.path.points);
                 }
 
 
 
                 /* ANIMATED VERT SETS */
 
-                if (b.points == null)
+                if (i.path.points == null)
                 {
 
-                    b.animSets = new BodymovinAnimatedShapeProperties[d["ks"]["k"].Count];
+                    i.path.animSets = new BodymovinAnimatedShapeProperties[d["ks"]["k"].Count];
 
                     for (int s = 0; s < d["ks"]["k"].Count; s++)
                     {
@@ -357,9 +379,9 @@ namespace U.movin
                         };
 
 
-                        b.animSets[s] = kset;
-                        b.animSets[s].pts[0] = new BodyPoint[k["s"][0]["v"].Count];
-                        b.animSets[s].pts[1] = new BodyPoint[k["e"][0]["v"].Count];
+                        i.path.animSets[s] = kset;
+                        i.path.animSets[s].pts[0] = new BodyPoint[k["s"][0]["v"].Count];
+                        i.path.animSets[s].pts[1] = new BodyPoint[k["e"][0]["v"].Count];
 
                         //Debug.Log("set - " + kset.t + "  i - " + kset.i.ToString("F4") + "  o - " + kset.o.ToString("F4"));
 
@@ -401,9 +423,9 @@ namespace U.movin
                         i.ks.ksets[s] = kset;
                     }
 
-                    if (b.animSets.Length > 0)
+                    if (i.path.animSets.Length > 0)
                     {
-                        b.points = b.animSets[0].pts[0];
+                        i.path.points = i.path.animSets[0].pts[0];
                     }
 
                 }
@@ -429,17 +451,18 @@ namespace U.movin
 
                 if (i.ty == "sh")
                 {
+                    
                     b.item = i;
-                    b.closed = b.animSets == null ? i.ks.k.c : i.ks.ksets[0].s.c;
+
+                    i.path.closed = i.path.animSets == null ? i.ks.k.c : i.ks.ksets[0].s.c;
+                    b.paths[pathCount] = i.path;
                     pathCount += 1;
 
-                    if (pathCount > 1)
-                    {
-                        Debug.Log("Generate moe shape content");
-                    }
+                    //Debug.Log("paths shape:  " + pathCount);
+                    //Debug.Log("paths shape pts:  " + i.path.points.Length);
+                    //Debug.Log("path: " + pathCount);
                 }
 
-                Debug.Log("path count: " + pathCount);
 
                 j++;
             }
@@ -488,12 +511,7 @@ namespace U.movin
         public bool strokeHidden;
         public float strokeWidth;
         public bool fillHidden;
-        public bool closed;
-        public BodyPoint[] points;
-        public BodymovinShape[] extraPaths;
-
-        /* ANIMATION */
-        public BodymovinAnimatedShapeProperties[] animSets;
+        public BodymovinShapePath[] paths;
     }
 
     public struct BodymovinShapeItem
@@ -507,7 +525,14 @@ namespace U.movin
         public bool hd;
         public int ix;
         public BodymovinShapeVertices ks;
+        public BodymovinShapePath path;
+    }
 
+    public struct BodymovinShapePath
+    {
+        public bool closed;
+        public BodyPoint[] points;
+        public BodymovinAnimatedShapeProperties[] animSets;
     }
 
     public struct BodymovinShapeVertices

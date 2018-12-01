@@ -37,24 +37,27 @@ namespace U.movin
         public bool animated = false;
         public MotionProps motion;
 
-        public BodyShapeSlave(BodyShape master, BodymovinShape content, float strokeMultiplier = 1f)
+        public BodymovinShapePath path;
+
+        public BodyShapeSlave(BodyShape master, BodymovinShapePath path, float strokeMultiplier = 1f)
         {
 
             this.master = master;
+            this.path = path;
             Transform parent = master.transform.parent;
 
-            points = (BodyPoint[])content.points.Clone();
-            closed = content.closed;
+            points = (BodyPoint[])path.points.Clone();
+            closed = path.closed;
 
 
             /* ANIM SETUP */
 
-            MotionSetup(ref animated, ref motion, content.animSets);
+            MotionSetup(ref animated, ref motion, path.animSets);
           
 
             /* GAMEOBJECT */
 
-            gameObject = new GameObject(content.item.ty + " pts: " + points.Length + "  closed: " + content.closed);
+            gameObject = new GameObject(master.content.item.ty + " pts: " + points.Length + "  closed: " + closed);
             transform.SetParent(parent, false);
             transform.localPosition = master.transform.localPosition;
 
@@ -71,8 +74,8 @@ namespace U.movin
             Color stClr = master.stroke.Color;
             Color flClr = master.fill.Color;
             
-            fill = content.fillHidden || content.fillColor == null ? null : new SolidFill() { Color = flClr };
-            stroke = content.strokeHidden || content.strokeColor == null ? null : new Stroke() { Color = stClr, HalfThickness = content.strokeWidth * strokeMultiplier };
+            fill = master.content.fillHidden || master.content.fillColor == null ? null : new SolidFill() { Color = flClr };
+            stroke = master.content.strokeHidden || master.content.strokeColor == null ? null : new Stroke() { Color = stClr, HalfThickness = master.content.strokeWidth * strokeMultiplier };
             props = new PathProperties() { Stroke = stroke };
 
             shape = new Shape() {
@@ -98,7 +101,7 @@ namespace U.movin
             /* ----- ANIM PROPS ----- */
 
             if (animated && !motion.completed) {
-                UpdateProperty(frame, ref motion, content.animSets);
+                UpdateProperty(frame, ref motion, path.animSets);
             }
            
             if (animated && !motion.completed)
@@ -116,12 +119,16 @@ namespace U.movin
 
         public void UpdateStrokeColor(Color c)
         {
-            
+            stroke.Color = c;
+            props.Stroke = stroke;
+            FillMesh();
         }
 
         public void UpdateFillColor(Color c)
         {
-
+            fill.Color = c;
+            shape.Fill = fill;
+            FillMesh();
         }
 
 
@@ -164,13 +171,22 @@ namespace U.movin
 
             for (int i = 0; i < points.Length; i++)
             {
-                points[i].p = startPoints[i].p + ((endPoints[i].p - startPoints[i].p) * ease);
-                points[i].i = startPoints[i].i + ((endPoints[i].i - startPoints[i].i) * ease);
-                points[i].o = startPoints[i].o + ((endPoints[i].o - startPoints[i].o) * ease);
-
+                if (m.percent < 0)
+                {
+                    // BACK TO START OF KEYFRAME
+                    points[i].p = startPoints[i].p;
+                    points[i].i = startPoints[i].i;
+                    points[i].o = startPoints[i].o;
+                }
+                else
+                {
+                    points[i].p = startPoints[i].p + ((endPoints[i].p - startPoints[i].p) * ease);
+                    points[i].i = startPoints[i].i + ((endPoints[i].i - startPoints[i].i) * ease);
+                    points[i].o = startPoints[i].o + ((endPoints[i].o - startPoints[i].o) * ease);
+                }
             }
 
-            
+
             /* ----- UPDATE MESH ----- */
 
             UpdateMesh(false);
@@ -182,7 +198,7 @@ namespace U.movin
 
         public void ResetKeyframes()
         {
-            if (animated) { SetKeyframe(ref motion, content.animSets, 0); }
+            if (animated) { SetKeyframe(ref motion, path.animSets, 0); }
         }
 
 
@@ -215,7 +231,7 @@ namespace U.movin
             prop.currentOutTangent = set[k].o;
             prop.nextInTangent = set[k].i;
 
-            if (set == content.animSets)
+            if (set == path.animSets)
             {
                 startPoints = set[k].pts[0];
                 endPoints = set[k].pts[1];
