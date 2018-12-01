@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.VectorGraphics;
+using UnityEngine.Rendering;
 
 namespace U.movin
 {
@@ -89,6 +90,7 @@ namespace U.movin
             //renderer.material = new Material(Shader.Find("Unlit/Vector"));
             //Debug.Log("sort:  " + renderer.sortingOrder);
 
+            gameObject.AddComponent<SortingGroup>();
 
 
             /* SETUP VECTOR */
@@ -234,6 +236,13 @@ namespace U.movin
 
             if ((animated && !motion.completed) || (strokeColorAnimated && !mstrokec.completed) || (fillColorAnimated && !mfillc.completed))
                 FillMesh();
+
+
+            if (slaves == null) { return; }
+            foreach (MovinShapeSlave slave in slaves)
+            {
+                slave.Update(frame);
+            }
         }
 
 
