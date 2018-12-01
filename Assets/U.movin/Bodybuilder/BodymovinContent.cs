@@ -239,6 +239,7 @@ namespace U.movin
 
         public static void ParseItems(ref BodymovinShape b, JSONNode n)
         {
+            int pathCount = 0;
             int j = 0;
             b.it = new BodymovinShapeItem[n["it"].Count];
 
@@ -253,7 +254,6 @@ namespace U.movin
                     hd = d["hd"],
                     c = new float[] { d["c"]["k"][0], d["c"]["k"][1], d["c"]["k"][2], d["c"]["k"][3] },
 
-                    //cSets = new BodymovinAnimatedProperties[d["c"]["k"].Count],
                     w = d["w"]["k"],
                     ks = new BodymovinShapeVertices
                     {
@@ -431,7 +431,15 @@ namespace U.movin
                 {
                     b.item = i;
                     b.closed = b.animSets == null ? i.ks.k.c : i.ks.ksets[0].s.c;
+                    pathCount += 1;
+
+                    if (pathCount > 1)
+                    {
+                        Debug.Log("Generate moe shape content");
+                    }
                 }
+
+                Debug.Log("path count: " + pathCount);
 
                 j++;
             }
@@ -482,7 +490,7 @@ namespace U.movin
         public bool fillHidden;
         public bool closed;
         public BodyPoint[] points;
-
+        public BodymovinShape[] extraPaths;
 
         /* ANIMATION */
         public BodymovinAnimatedShapeProperties[] animSets;

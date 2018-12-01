@@ -14,6 +14,7 @@ namespace U.movin
             get { return gameObject.transform; }
         }
 
+        public BodyShapeSlave[] slaves;
         public BodymovinShape content;
         public Shape shape;
         public Scene scene;
@@ -21,7 +22,7 @@ namespace U.movin
         public MeshFilter filter;
         public MeshRenderer renderer;
         public List<VectorUtils.Geometry> geoms;
-        private VectorUtils.TessellationOptions options;
+        public VectorUtils.TessellationOptions options;
 
         public BodyPoint[] points;
         public BodyPoint[] startPoints;
@@ -33,8 +34,8 @@ namespace U.movin
         public bool closed;
 
         PathProperties props;
-        SolidFill fill;
-        Stroke stroke;
+        public SolidFill fill;
+        public Stroke stroke;
 
         public bool animated = false;
         public bool strokeColorAnimated = false;
@@ -367,6 +368,10 @@ namespace U.movin
             if (animated) { SetKeyframe(ref motion, content.animSets, 0); }
             if (strokeColorAnimated) { SetKeyframe(ref mstrokec, content.strokeColorSets, 0); }
             if (fillColorAnimated) { SetKeyframe(ref mfillc, content.fillColorSets, 0); }
+
+            foreach (BodyShapeSlave slave in slaves) {
+                slave.ResetKeyframes();
+            }
         }
 
 

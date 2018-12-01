@@ -7,7 +7,7 @@ public class Startup : MonoBehaviour {
 
     void Start () {
         
-        mov = new Movin(transform, "json/color");
+        mov = new Movin(transform, "json/dupe");
         mov.Play();
     }
 
