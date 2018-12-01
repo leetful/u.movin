@@ -252,6 +252,8 @@ namespace U.movin
                     ix = d["ix"],
                     hd = d["hd"],
                     c = new float[] { d["c"]["k"][0], d["c"]["k"][1], d["c"]["k"][2], d["c"]["k"][3] },
+
+                    //cSets = new BodymovinAnimatedProperties[d["c"]["k"].Count],
                     w = d["w"]["k"],
                     ks = new BodymovinShapeVertices
                     {
@@ -268,6 +270,31 @@ namespace U.movin
                     }
                 };
 
+
+                /* COLORS */
+
+                int colorAnimated = d["c"]["a"].AsInt;
+                if (colorAnimated == 1)
+                {
+                    i.cSets = new BodymovinAnimatedProperties[d["c"]["k"].Count];
+                    for (int c = 0; c < d["c"]["k"].Count; c++)
+                    {
+                        JSONNode k = d["c"]["k"][c];
+
+                        i.cSets[c] = new BodymovinAnimatedProperties
+                        {
+                            t = k["t"],
+                            i = new Vector2(k["i"]["x"][0].AsFloat, k["i"]["y"][0].AsFloat),
+                            o = new Vector2(k["o"]["x"][0].AsFloat, k["o"]["y"][0].AsFloat),
+
+                            s = new Vector3(k["s"][0].AsFloat, k["s"][1].AsFloat, k["s"][2].AsFloat),
+                            e = new Vector3(k["e"][0].AsFloat, k["e"][1].AsFloat, k["e"][2].AsFloat)
+                        };
+
+                        //Debug.Log("s: " + i.cSets[c].s);
+                    }
+                    
+                }
 
                 /* VERTS */
 
@@ -388,6 +415,7 @@ namespace U.movin
                 if (i.ty == "st")
                 {
                     b.strokeColor = i.c;
+                    b.strokeColorSets = i.cSets != null && i.cSets.Length > 0 ? i.cSets : new BodymovinAnimatedProperties[0];
                     b.strokeHidden = i.hd;
                     b.strokeWidth = i.w;
                 }
@@ -395,6 +423,7 @@ namespace U.movin
                 if (i.ty == "fl")
                 {
                     b.fillColor = i.c;
+                    b.fillColorSets = i.cSets != null && i.cSets.Length > 0 ? i.cSets : new BodymovinAnimatedProperties[0];
                     b.fillHidden = i.hd;
                 }
 
@@ -465,6 +494,7 @@ namespace U.movin
         public string nm;
         public string mn;
         public float[] c;
+        public BodymovinAnimatedProperties[] cSets;
         public float w;
         public bool hd;
         public int ix;
@@ -522,16 +552,6 @@ namespace U.movin
         public float sf;
         public float ef;
     }
-
-    //public struct BodymovinAnimatedFloat
-    //{
-    //    public float t;
-    //    public Vector2 i;
-    //    public Vector2 o;
-
-    //    public float s;
-    //    public float e;
-    //}
 
 
     // Custom structures

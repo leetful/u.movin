@@ -145,15 +145,20 @@ namespace U.movin
 
             if (opacityAnimated && !mopacity.completed) {
                 UpdateProperty(frame, ref mopacity, content.opacitySets);
-            } else if (positionAnimated && !mpos.completed) {
+            }
+            if (positionAnimated && !mpos.completed) {
                 UpdateProperty(frame, ref mpos, content.positionSets);
-            } else if (scaleAnimated && !mscale.completed) {
+            }
+            if (scaleAnimated && !mscale.completed) {
                 UpdateProperty(frame, ref mscale, content.scaleSets);
-            } else if (rotationXAnimated && !mrotx.completed) {
+            }
+            if (rotationXAnimated && !mrotx.completed) {
                 UpdateProperty(frame, ref mrotx, content.rotationXSets);
-            } else if (rotationYAnimated && !mroty.completed) {
+            }
+            if (rotationYAnimated && !mroty.completed) {
                 UpdateProperty(frame, ref mroty, content.rotationYSets);
-            } else if (rotationZAnimated && !mrotz.completed) {
+            }
+            if (rotationZAnimated && !mrotz.completed) {
                 UpdateProperty(frame, ref mrotz, content.rotationZSets);
             }
 
@@ -209,10 +214,8 @@ namespace U.movin
             } else if (set == content.rotationZSets) {
                 finalRotation.z = Value1(m, set, ease);
             } else if (set == content.opacitySets) {
-                float opacity = Value1(m, set, ease);
-                foreach (BodyShape s in shapes)
-                {
-                    s.UpdateOpacity(opacity);
+                foreach (BodyShape s in shapes) {
+                    s.UpdateOpacity(Value1(m, set, ease));
                 }
             }
 
@@ -241,13 +244,11 @@ namespace U.movin
             if (rotationXAnimated) { SetKeyframe(ref mrotx, content.rotationXSets, 0); }
             if (rotationYAnimated) { SetKeyframe(ref mroty, content.rotationYSets, 0); }
             if (rotationZAnimated) { SetKeyframe(ref mrotz, content.rotationZSets, 0); }
+            if (opacityAnimated) { SetKeyframe(ref mopacity, content.opacitySets, 0); }
 
             foreach (BodyShape shape in shapes)
             {
-                if (shape.animated)
-                {
-                    shape.SetKeyframe(0);
-                }
+                shape.ResetKeyframes();
             }
 
         }
