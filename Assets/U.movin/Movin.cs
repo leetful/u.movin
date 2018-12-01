@@ -30,6 +30,7 @@ public class Movin
     public BodymovinContent content;
     public Updater updater;
     private BodyLayer[] layers;
+    private BodyLayer[] layersByIndex;
 
     public static float scaleFactor = 0.1f;
     public bool playing = false;
@@ -52,29 +53,45 @@ public class Movin
         frameRate = content.fr;
         totalFrames = content.op;
         layers = new BodyLayer[content.layers.Length];
-
+        
         if (content.layers.Length <= 0) { Debug.Log("NO LAYERS, ABORT..."); return; }
 
-        int indexOffset = (content.layers[0].ind > 1) ? content.layers[0].ind - 1 : 0;
 
+        /* ----- CREATE LAYERS ----- */
+
+        int highestIndex = 0;
         for (int i = 0; i < content.layers.Length; i++)
         {
             BodyLayer layer = new BodyLayer(this, content.layers[i]);
-            layers[layer.content.ind - indexOffset - 1] = layer;
+            layers[i] = layer;
 
-            //Debug.Log("layer len:  " + layers.Length + "    ind:  " + layer.content.ind);
-
+            highestIndex = layer.content.ind > highestIndex ? layer.content.ind : highestIndex;
         }
+
+
+        /* ----- ARRAY BY INDEX ----- */
+
+        layersByIndex = new BodyLayer[highestIndex + 1];
+        for (int i = 0; i < content.layers.Length; i++)
+        {
+            layersByIndex[layers[i].content.ind] = layers[i];
+        }
+
+
+        /* ----- SET PARENTS ----- */
 
         for (int i = 0; i < content.layers.Length; i++)
         {
-            int p = layers[i].content.parent - indexOffset;     // Should it be minus offset?
+            int p = layers[i].content.parent;
             if (p <= 0)
                 continue;
 
-            layers[i].transform.SetParent(layers[p - 1].transform, false);
-            
+            layers[i].transform.SetParent(layersByIndex[p].transform, false);
+
         }
+
+
+        /* ----- GET FRAME UPDATES ----- */
 
         updater = gameObject.AddComponent<Updater>();
         updater.fired += Update;

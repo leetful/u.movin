@@ -71,11 +71,8 @@ namespace U.movin
 
             /* SETUP VECTOR */
 
-            Color stClr = master.stroke.Color;
-            Color flClr = master.fill.Color;
-            
-            fill = master.content.fillHidden || master.content.fillColor == null ? null : new SolidFill() { Color = flClr };
-            stroke = master.content.strokeHidden || master.content.strokeColor == null ? null : new Stroke() { Color = stClr, HalfThickness = master.content.strokeWidth * strokeMultiplier };
+            fill = master.content.fillHidden || master.content.fillColor == null ? null : new SolidFill() { Color = master.fill.Color };
+            stroke = master.content.strokeHidden || master.content.strokeColor == null ? null : new Stroke() { Color = master.stroke.Color, HalfThickness = master.content.strokeWidth * strokeMultiplier };
             props = new PathProperties() { Stroke = stroke };
 
             shape = new Shape() {
