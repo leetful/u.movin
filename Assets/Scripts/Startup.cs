@@ -7,7 +7,7 @@ public class Startup : MonoBehaviour {
 
     void Start () {
 
-        mov = new Movin(transform, "json/dupe2");
+        mov = new Movin(transform, "json/bag");
         mov.Play();
     }
 

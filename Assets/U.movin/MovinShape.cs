@@ -24,6 +24,7 @@ namespace U.movin
         public MeshRenderer renderer;
         public List<VectorUtils.Geometry> geoms;
         public VectorUtils.TessellationOptions options;
+        public SortingGroup sorting;
 
         public BodyPoint[] points;
         public BodyPoint[] startPoints;
@@ -34,7 +35,7 @@ namespace U.movin
         public BezierPathSegment[] segments;
         public bool closed;
 
-        PathProperties props;
+        public PathProperties props;
         public SolidFill fill;
         public Stroke stroke;
 
@@ -47,6 +48,8 @@ namespace U.movin
         public MotionProps mfillc;
 
         public BodymovinAnimatedShapeProperties[] motionSet;
+
+        public MovinShape()  { }
 
         public MovinShape(MovinLayer layer, BodymovinShape content)
         {
@@ -88,9 +91,9 @@ namespace U.movin
             renderer = gameObject.AddComponent<MeshRenderer>();
             renderer.material = new Material(Shader.Find("Sprites/Default"));
             //renderer.material = new Material(Shader.Find("Unlit/Vector"));
-            //Debug.Log("sort:  " + renderer.sortingOrder);
+            
+            sorting = gameObject.AddComponent<SortingGroup>();
 
-            gameObject.AddComponent<SortingGroup>();
 
 
             /* SETUP VECTOR */
