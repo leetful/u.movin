@@ -20,6 +20,7 @@ namespace U.movin
         public MotionProps mrotx;
         public MotionProps mroty;
         public MotionProps mrotz;
+        public MotionProps mopacity;
 
         public Vector3 positionOffset;
         public Vector3 finalRotation = Vector3.zero;
@@ -29,6 +30,7 @@ namespace U.movin
         public bool rotationXAnimated = false;
         public bool rotationYAnimated = false;
         public bool rotationZAnimated = false;
+        public bool opacityAnimated = false;
 
 
         public BodyLayer(Movin body, BodymovinLayer layer)
@@ -50,68 +52,22 @@ namespace U.movin
 
             /* POSITION ANIM SETUP */
 
-            positionAnimated = content.positionSets.Length > 0;
-            if (positionAnimated)
-            {
-                mpos = new MotionProps
-                {
-                    keys = content.positionSets.Length
-                };
-
-                SetKeyframe(ref mpos, content.positionSets, 0);
-                //Debug.Log("----- start: " + content.positionSets[0].s + "    end: " + content.positionSets[0].e + "    p: " + mpos.percent);
-            }
-
+            MotionSetup(ref positionAnimated, ref mpos, content.positionSets);
 
             /* SCALE ANIM SETUP */
 
-            scaleAnimated = content.scaleSets.Length > 0;
-            if (scaleAnimated)
-            {
-                mscale = new MotionProps
-                {
-                    keys = content.scaleSets.Length
-                };
-
-                SetKeyframe(ref mscale, content.scaleSets, 0);
-            }
-
+            MotionSetup(ref scaleAnimated, ref mscale, content.scaleSets);
 
             /* ROTATION ANIM SETUP */
 
-            rotationXAnimated = content.rotationXSets.Length > 0;
-            if (rotationXAnimated)
-            {
-                mrotx = new MotionProps
-                {
-                    keys = content.rotationXSets.Length
-                };
+            MotionSetup(ref rotationXAnimated, ref mrotx, content.rotationXSets);
+            MotionSetup(ref rotationYAnimated, ref mroty, content.rotationYSets);
+            MotionSetup(ref rotationZAnimated, ref mrotz, content.rotationZSets);
 
-                SetKeyframe(ref mrotx, content.rotationXSets, 0);
-            }
+            /* OPACITY ANIM SETUP */
 
-            rotationYAnimated = content.rotationYSets.Length > 0;
-            if (rotationYAnimated)
-            {
-                mroty = new MotionProps
-                {
-                    keys = content.rotationYSets.Length
-                };
-
-                SetKeyframe(ref mroty, content.rotationYSets, 0);
-            }
-
-            rotationZAnimated = content.rotationZSets.Length > 0;
-            if (rotationZAnimated)
-            {
-                mrotz = new MotionProps
-                {
-                    keys = content.rotationZSets.Length
-                };
-
-                SetKeyframe(ref mrotz, content.rotationZSets, 0);
-            }
-
+            MotionSetup(ref opacityAnimated, ref mopacity, content.opacitySets);
+           
 
 
             /* SHAPES */
@@ -135,6 +91,20 @@ namespace U.movin
 
                 //shape.transform.localPosition += new Vector3(0, 0, -32 * j);
                 j += 1;
+            }
+        }
+
+
+        public void MotionSetup(ref bool b, ref MotionProps prop, BodymovinAnimatedProperties[] set)
+        {
+            b = set.Length > 0;
+            if (b)
+            {
+                prop = new MotionProps {
+                    keys = set.Length
+                };
+
+                SetKeyframe(ref prop, set, 0);
             }
         }
 

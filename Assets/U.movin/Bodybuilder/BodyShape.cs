@@ -21,6 +21,7 @@ namespace U.movin
         public MeshFilter filter;
         public MeshRenderer renderer;
         public List<VectorUtils.Geometry> geoms;
+        private VectorUtils.TessellationOptions options;
 
         public BodyPoint[] points;
         public BodyPoint[] startPoints;
@@ -30,17 +31,7 @@ namespace U.movin
         public BodyLayer layer;
         public BezierPathSegment[] segments;
         public bool closed;
-
-
-        /* ANIMATION PROPS */
         public bool animated = false;
-
-        //public int key = 0;                     // Current keyframe
-        //public int keys = 0;                    // Total keyframes
-        //public float startFrame = 0;            // Frame current animation started
-        //public float endFrame = 0;              // Frame current animation ends
-        //public float percent = 0;               // Percentage to reach next key
-        //public bool completed = false;          // Animation complete
         public MotionProps motion;
 
         public BodyShape(BodyLayer layer, BodymovinShape content, float strokeMultiplier = 1f)
@@ -60,7 +51,6 @@ namespace U.movin
             animated = content.animSets != null;
             if (animated)
             {
-                //keys = content.animSets.Length;
                 motion = new MotionProps()
                 {
                     keys = content.animSets.Length
@@ -85,6 +75,7 @@ namespace U.movin
 
             //renderer.material = new Material(Shader.Find("Sprites/Default"));
             renderer.material = new Material(Shader.Find("Unlit/Vector"));
+            
             //renderer.material.color = new Color(item.c[0], item.c[1], item.c[2]);
 
             Color stClr;
@@ -93,8 +84,8 @@ namespace U.movin
             Color flClr;
             flClr = (content.fillColor == null) ? new Color(1, 1, 1) : new Color(content.fillColor[0], content.fillColor[1], content.fillColor[2]);
 
-            SolidFill fill = content.fillHidden ? null : new SolidFill() { Color = flClr };
-            Stroke stroke = content.strokeHidden ? null : new Stroke() { Color = stClr, HalfThickness = content.strokeWidth * strokeMultiplier };
+            SolidFill fill = content.fillHidden || content.fillColor == null ? null : new SolidFill() { Color = flClr };
+            Stroke stroke = content.strokeHidden || content.strokeColor == null ? null : new Stroke() { Color = stClr, HalfThickness = content.strokeWidth * strokeMultiplier };
 
             shape = new Shape()
             {
@@ -103,8 +94,59 @@ namespace U.movin
                 FillTransform = Matrix2D.identity
             };
 
+            options = new VectorUtils.TessellationOptions()
+            {
+                StepDistance = 1000.0f,
+                MaxCordDeviation = 0.05f,
+                MaxTanAngleDeviation = 0.05f,
+                SamplingStepSize = 0.01f
+            };
+
+            scene = new Scene()
+            {
+                Root = new SceneNode() { Shapes = new List<Shape> { shape } }
+            };
+
+
             //if (keys > 0) { mesh.MarkDynamic(); }
             UpdateMesh();
+
+        }
+
+
+        public void UpdateSegments(BodyPoint[] pts, ref BezierPathSegment[] segs)
+        {
+            float y = -1f;
+           
+            for (int i = 0; i < pts.Length; i++)
+            {
+                BodyPoint point = pts[i];
+
+                // Next point...
+
+                bool last = i >= pts.Length - 1;
+                BodyPoint nextPoint = last ? pts[0] : pts[i + 1];
+
+
+                // UPDATE segment
+
+                segs[i].P0.x = point.p.x;
+                segs[i].P0.y = point.p.y * y;
+
+                segs[i].P1.x = point.p.x + point.o.x;
+                segs[i].P1.y = (point.p.y + point.o.y) * y;
+
+                segs[i].P2.x = nextPoint.p.x + nextPoint.i.x;
+                segs[i].P2.y = (nextPoint.p.y + nextPoint.i.y) * y;
+              
+            }
+
+            int l = segs.Length - 1;
+            
+            segs[l].P0.x = pts[0].p.x;
+            segs[l].P0.y = pts[0].p.y * y;
+
+            segs[l].P1.x = segs[l].P1.y = segs[l].P2.x = segs[l].P2.y = 0;
 
         }
 
@@ -121,17 +163,8 @@ namespace U.movin
 
                 // Next point...
 
-                BodyPoint nextPoint;
-
-                if (i >= pts.Length - 1)
-                {
-                    nextPoint = pts[0];
-                }
-                else
-                {
-                    nextPoint = pts[i + 1];
-                }
-
+                bool last = i >= pts.Length - 1;
+                BodyPoint nextPoint = last ? pts[0] : pts[i + 1];
 
 
                 // Make segment
@@ -149,7 +182,6 @@ namespace U.movin
 
             if (pts.Length > 0 && i == cnt - 1)
             {
-                //Debug.Log("Final seg - " + cnt + "  for closed: " + closed);
                 BezierPathSegment final = new BezierPathSegment()
                 {
                     P0 = new Vector2(pts[0].p.x, pts[0].p.y * y)
@@ -159,14 +191,12 @@ namespace U.movin
             }
 
 
-
             /* READOUT */
 
             //foreach (BezierPathSegment s in segs)
             //{
             //    Debug.Log("P0: " + s.P0 + "  P1: " + s.P1 + "  P2: " + s.P2);
             //}
-
 
             return segs;
         }
@@ -177,7 +207,7 @@ namespace U.movin
             if (motion.completed) { return; }
             if (motion.keys <= 0)
             {
-                //Debug.Log("NO KEYFRAMES TO ANIMATE!");
+                //Debug.Log(">>>>> NO KEYFRAMES TO ANIMATE!");
                 motion.completed = true;
                 return;
             }
@@ -206,17 +236,9 @@ namespace U.movin
                 points[i].i = startPoints[i].i + ((endPoints[i].i - startPoints[i].i) * ease);
                 points[i].o = startPoints[i].o + ((endPoints[i].o - startPoints[i].o) * ease);
 
-                //if (i == 0)
-                //{
-                //Debug.Log(key + " / " + percent + "     " + points[i].p.x + "    s: " + startPoints[i].p.x + "  e: " + endPoints[i].p.x);
-                //Debug.Log(" --- " + frame + " / " + endFrame);
-                //}
-
             }
 
             UpdateMesh();
-
-            //Debug.Log(" - percent - " + percent + "  t - " + time + "  frame - " + frame + "  st - " + startFrame + "  nd - " + endFrame);
         }
 
 
@@ -235,36 +257,24 @@ namespace U.movin
             motion.nextInTangent = content.animSets[motion.key].i;
         }
 
+
         public void UpdateMesh()
         {
-            segments = ConvertPointsToSegments(points);
-
-            shape.Contours = new BezierContour[] { new BezierContour() { Segments = segments, Closed = closed } };
-            scene = new Scene()
+            if (segments == null)
             {
-                Root = new SceneNode() { Shapes = new List<Shape> { shape } }
-            };
-
-            geoms = VectorUtils.TessellateScene(scene, new VectorUtils.TessellationOptions()
+                segments = ConvertPointsToSegments(points);
+                shape.Contours = new BezierContour[] { new BezierContour() { Segments = segments, Closed = closed } };
+            }
+            else
             {
-                StepDistance = 1000.0f,
-                MaxCordDeviation = 0.05f,
-                MaxTanAngleDeviation = 0.05f,
-                SamplingStepSize = 0.01f
-            });
+                UpdateSegments(points, ref segments);
+                //segments = ConvertPointsToSegments(points);
+                //shape.Contours = new BezierContour[] { new BezierContour() { Segments = segments, Closed = closed } };
+            }
 
+            geoms = VectorUtils.TessellateScene(scene, options);
             VectorUtils.FillMesh(mesh, geoms, 1.0f);
-
         }
 
-        public void SetBounds(float z = 0.1f)
-        {
-
-            //Bounds b = filter.mesh.bounds;
-            //b.size += new Vector3(0, 0, 0.1f);
-
-            filter.mesh.bounds = new Bounds(filter.mesh.bounds.center, filter.mesh.bounds.extents + new Vector3(0, 0, z));
-
-        }
     }
 }

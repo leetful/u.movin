@@ -70,12 +70,13 @@ namespace U.movin
             b.shapes = new BodymovinShape[n["shapes"].Count];
             b.anchorPoint = new Vector3(n["ks"]["a"]["k"][0].AsFloat, -n["ks"]["a"]["k"][1], n["ks"]["a"]["k"][2]);
             b.position = new Vector3(n["ks"]["p"]["k"][0].AsFloat, -n["ks"]["p"]["k"][1], n["ks"]["p"]["k"][2]);
-            b.rotationEuler = new Vector3(-n["ks"]["rx"]["k"].AsFloat, n["ks"]["ry"]["k"].AsFloat, n["ks"]["rz"]["k"].AsFloat);
+            b.rotationEuler = new Vector3(-n["ks"]["rx"]["k"].AsFloat, n["ks"]["ry"]["k"].AsFloat, -n["ks"]["rz"]["k"].AsFloat);
             b.rotationXSets = new BodymovinAnimatedProperties[n["ks"]["rx"]["k"].Count];
             b.rotationYSets = new BodymovinAnimatedProperties[n["ks"]["ry"]["k"].Count];
             b.rotationZSets = new BodymovinAnimatedProperties[n["ks"]["rz"]["k"].Count];
             b.scale = new Vector3(n["ks"]["s"]["k"][0].AsFloat * 0.01f, n["ks"]["s"]["k"][1] * 0.01f, n["ks"]["s"]["k"][2] * 0.01f);
-
+            b.opacity = n["ks"]["o"]["k"].AsFloat;
+            b.opacitySets = new BodymovinAnimatedProperties[n["ks"]["o"]["k"].Count];
 
             int positionAnimated = n["ks"]["p"]["a"].AsInt;
             b.positionSets = new BodymovinAnimatedProperties[positionAnimated == 1 ? n["ks"]["p"]["k"].Count : 0];
@@ -83,6 +84,24 @@ namespace U.movin
             int scaleAnimated = n["ks"]["s"]["a"].AsInt;
             b.scaleSets = new BodymovinAnimatedProperties[scaleAnimated == 1 ? n["ks"]["s"]["k"].Count : 0];
 
+            if (b.opacitySets.Length > 0)
+            {
+                for (int i = 0; i < n["ks"]["o"]["k"].Count; i++)
+                {
+                    JSONNode k = n["ks"]["o"]["k"][i];
+                    b.opacitySets[i] = new BodymovinAnimatedProperties
+                    {
+                        t = k["t"],
+                        i = new Vector2(k["i"]["x"][0].AsFloat, k["i"]["y"][0].AsFloat),
+                        o = new Vector2(k["o"]["x"][0].AsFloat, k["o"]["y"][0].AsFloat),
+
+                        sf = -k["s"][0].AsFloat,
+                        ef = -k["e"][0].AsFloat
+                    };
+
+                    //Debug.Log(i + " - " + b.rotationXSets[i].i + "  " + b.rotationXSets[i].o + "  " + b.rotationXSets[i].sf + "  " + b.rotationXSets[i].ef + "  " + b.rotationXSets[i].t);
+                }
+            }
 
             if (b.rotationXSets.Length > 0)
             {
@@ -406,6 +425,9 @@ namespace U.movin
         public Vector3 scale;
         public BodymovinAnimatedProperties[] scaleSets;
 
+        public float opacity;
+        public BodymovinAnimatedProperties[] opacitySets;
+
         public Vector3 rotationEuler;
         public Quaternion rotation;
         public BodymovinAnimatedProperties[] rotationXSets;
@@ -423,7 +445,9 @@ namespace U.movin
         public BodymovinShapeItem[] it;
         public BodymovinShapeItem item;
         public float[] strokeColor;
+        public BodymovinAnimatedProperties[] strokeColorSets;
         public float[] fillColor;
+        public BodymovinAnimatedProperties[] fillColorSets;
         public bool strokeHidden;
         public float strokeWidth;
         public bool fillHidden;
