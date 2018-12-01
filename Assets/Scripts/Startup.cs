@@ -10,8 +10,8 @@ public class Startup : MonoBehaviour {
 
     void Start () {
 
-        mov = new Movin(transform, "json/dupe3");
-        mov.Play();
+        //mov = new Movin(transform, "json/dupe3");
+        //mov.Play();
 
         mov2 = new Movin(transform, "json/color", -100);
         mov2.Play();
@@ -19,8 +19,8 @@ public class Startup : MonoBehaviour {
         mov3 = new Movin(transform, "json/ship", 200);
         mov3.Play();
 
-        mov4 = new Movin(transform, "json/bag", 200);
-        mov4.Play();
+        //mov4 = new Movin(transform, "json/bag", 200);
+        //mov4.Play();
     }
 
 }
