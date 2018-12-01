@@ -95,8 +95,8 @@ namespace U.movin
                         i = new Vector2(k["i"]["x"][0].AsFloat, k["i"]["y"][0].AsFloat),
                         o = new Vector2(k["o"]["x"][0].AsFloat, k["o"]["y"][0].AsFloat),
 
-                        sf = -k["s"][0].AsFloat,
-                        ef = -k["e"][0].AsFloat
+                        sf = k["s"][0].AsFloat,
+                        ef = k["e"][0].AsFloat
                     };
 
                     //Debug.Log(i + " - " + b.rotationXSets[i].i + "  " + b.rotationXSets[i].o + "  " + b.rotationXSets[i].sf + "  " + b.rotationXSets[i].ef + "  " + b.rotationXSets[i].t);

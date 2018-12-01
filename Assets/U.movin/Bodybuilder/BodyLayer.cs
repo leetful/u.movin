@@ -82,13 +82,6 @@ namespace U.movin
                 BodyShape shape = new BodyShape(this, content.shapes[i], 0.85f);
                 shapes[i] = shape;
 
-                //if (layer.ind == 8 && i == 1)
-                //{
-                //Debug.Log("bounds:  " + shape.filter.mesh.bounds);
-                //shape.SetBounds(113.0f);
-                //Debug.Log("recalc:  " + shape.filter.mesh.bounds);
-                //}
-
                 //shape.transform.localPosition += new Vector3(0, 0, -32 * j);
                 j += 1;
             }
@@ -128,7 +121,7 @@ namespace U.movin
         public void Update(float frame)
         {
 
-            // IN + OUT POINTS FOR LAYER
+            /* ----- IN + OUT POINTS FOR LAYER ----- */
 
             if (!gameObject.activeInHierarchy && frame >= content.inFrame) { gameObject.SetActive(true); }
             if (!gameObject.activeInHierarchy) { return; }
@@ -140,7 +133,7 @@ namespace U.movin
             }
 
 
-            // SEND DOWN UPDATES
+            /* ----- SEND DOWN UPDATES ----- */
 
             foreach (BodyShape shape in shapes)
             {
@@ -148,36 +141,23 @@ namespace U.movin
             }
 
 
-            // ANIM PROPS
+            /* ----- ANIM PROPS ----- */
 
-            if (positionAnimated && !mpos.completed)
-            {
+            if (opacityAnimated && !mopacity.completed) {
+                UpdateProperty(frame, ref mopacity, content.opacitySets);
+            } else if (positionAnimated && !mpos.completed) {
                 UpdateProperty(frame, ref mpos, content.positionSets);
-            }
-
-            if (scaleAnimated && !mscale.completed)
-            {
+            } else if (scaleAnimated && !mscale.completed) {
                 UpdateProperty(frame, ref mscale, content.scaleSets);
-            }
-
-            if (rotationXAnimated && !mrotx.completed)
-            {
+            } else if (rotationXAnimated && !mrotx.completed) {
                 UpdateProperty(frame, ref mrotx, content.rotationXSets);
-            }
-
-            if (rotationYAnimated && !mroty.completed)
-            {
+            } else if (rotationYAnimated && !mroty.completed) {
                 UpdateProperty(frame, ref mroty, content.rotationYSets);
-            }
-
-            if (rotationZAnimated && !mrotz.completed)
-            {
+            } else if (rotationZAnimated && !mrotz.completed) {
                 UpdateProperty(frame, ref mrotz, content.rotationZSets);
             }
 
-            if (rotationXAnimated || rotationYAnimated || rotationZAnimated)
-            {
-                //Debug.Log("Rot - " + finalRotation);
+            if (rotationXAnimated || rotationYAnimated || rotationZAnimated) {
                 transform.localRotation = Quaternion.Euler(finalRotation);
             }
         }
@@ -185,9 +165,10 @@ namespace U.movin
         public void UpdateProperty(float frame, ref MotionProps m, BodymovinAnimatedProperties[] set)
         {
 
-            if (m.keys <= 0)
-            {
-                Debug.Log("NO PROP KEYS TO ANIMATE!");
+            /* ----- CHECK FOR COMPLETE ----- */
+
+            if (m.keys <= 0) {
+                //Debug.Log(">>> NO PROP KEYS TO ANIMATE!");
                 m.completed = true;
                 return;
             }
@@ -204,71 +185,52 @@ namespace U.movin
                 SetKeyframe(ref m, set, m.key + 1);
             }
 
+
+            /* ----- PERCENT KEYFRAME COMPLETE ----- */
+
             m.percent = (frame - m.startFrame) / (m.endFrame - m.startFrame);
 
 
-            /* ----- CUBIC BEZIER ----- */
+            /* ----- CUBIC BEZIER EASE ----- */
+
             float ease = Ease.CubicBezier(Vector2.zero, m.currentOutTangent, m.nextInTangent, Vector2.one, m.percent);
 
-            if (set == content.positionSets)
-            {
-                if (m.percent < 0)
+
+            /* ----- UPDATE PROPERTY ----- */
+
+            if (set == content.positionSets) {
+                transform.localPosition = Value3(m, set, ease) - positionOffset;
+            } else if (set == content.scaleSets)  {
+                transform.localScale = Value3(m, set, ease);
+            } else if (set == content.rotationXSets) {
+                finalRotation.x = Value1(m, set, ease);
+            } else if (set == content.rotationYSets)  {
+                finalRotation.y = Value1(m, set, ease);
+            } else if (set == content.rotationZSets) {
+                finalRotation.z = Value1(m, set, ease);
+            } else if (set == content.opacitySets) {
+                float opacity = Value1(m, set, ease);
+                foreach (BodyShape s in shapes)
                 {
-
-                    transform.localPosition = set[m.key].s - positionOffset;
-                    return;
+                    s.UpdateOpacity(opacity);
                 }
-
-                transform.localPosition = set[m.key].s + ((set[m.key].e - set[m.key].s) * ease) - positionOffset;
-
-            }
-            else if (set == content.scaleSets)
-            {
-                if (m.percent < 0)
-                {
-                    transform.localScale = set[m.key].s;
-                    return;
-                }
-
-                transform.localScale = set[m.key].s + ((set[m.key].e - set[m.key].s) * ease);
-
-            }
-            else if (set == content.rotationXSets)
-            {
-                if (m.percent < 0)
-                {
-                    finalRotation.x = set[m.key].sf;
-                    return;
-                }
-
-                finalRotation.x = set[m.key].sf + ((set[m.key].ef - set[m.key].sf) * ease);
-
-            }
-            else if (set == content.rotationYSets)
-            {
-                if (m.percent < 0)
-                {
-                    finalRotation.y = set[m.key].sf;
-                    return;
-                }
-
-                finalRotation.y = set[m.key].sf + ((set[m.key].ef - set[m.key].sf) * ease);
-
-            }
-            else if (set == content.rotationZSets)
-            {
-                if (m.percent < 0)
-                {
-                    finalRotation.z = set[m.key].sf;
-                    return;
-                }
-
-                finalRotation.z = set[m.key].sf + ((set[m.key].ef - set[m.key].sf) * ease);
-
             }
 
         }
 
+
+
+        public Vector3 Value3(MotionProps m, BodymovinAnimatedProperties[] set, float ease)
+        {
+            return m.percent < 0 ?
+                    set[m.key].s : set[m.key].s + ((set[m.key].e - set[m.key].s) * ease);
+        }
+
+        public float Value1(MotionProps m, BodymovinAnimatedProperties[] set, float ease)
+        {
+            return m.percent < 0 ?
+                    set[m.key].sf : set[m.key].sf + ((set[m.key].ef - set[m.key].sf) * ease);
+        }
 
 
 

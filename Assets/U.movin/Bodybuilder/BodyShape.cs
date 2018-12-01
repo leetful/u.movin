@@ -73,16 +73,13 @@ namespace U.movin
             renderer = gameObject.AddComponent<MeshRenderer>();
             //Debug.Log("sort:  " + renderer.sortingOrder);
 
-            //renderer.material = new Material(Shader.Find("Sprites/Default"));
-            renderer.material = new Material(Shader.Find("Unlit/Vector"));
-            
+            renderer.material = new Material(Shader.Find("Sprites/Default"));
+            //renderer.material = new Material(Shader.Find("Unlit/Vector"));
+
             //renderer.material.color = new Color(item.c[0], item.c[1], item.c[2]);
 
-            Color stClr;
-            stClr = (content.strokeColor == null) ? new Color(1, 1, 1) : new Color(content.strokeColor[0], content.strokeColor[1], content.strokeColor[2]);
-            
-            Color flClr;
-            flClr = (content.fillColor == null) ? new Color(1, 1, 1) : new Color(content.fillColor[0], content.fillColor[1], content.fillColor[2]);
+            Color stClr = (content.strokeColor == null) ? new Color(1, 1, 1) : new Color(content.strokeColor[0], content.strokeColor[1], content.strokeColor[2]);
+            Color flClr = (content.fillColor == null) ? new Color(1, 1, 1) : new Color(content.fillColor[0], content.fillColor[1], content.fillColor[2]);
 
             SolidFill fill = content.fillHidden || content.fillColor == null ? null : new SolidFill() { Color = flClr };
             Stroke stroke = content.strokeHidden || content.strokeColor == null ? null : new Stroke() { Color = stClr, HalfThickness = content.strokeWidth * strokeMultiplier };
@@ -150,6 +147,7 @@ namespace U.movin
 
         }
 
+
         public BezierPathSegment[] ConvertPointsToSegments(BodyPoint[] pts)
         {
             float y = -1f;
@@ -204,6 +202,8 @@ namespace U.movin
 
         public void Update(float frame)
         {
+            /* ----- COMPLETE CHECK ----- */
+
             if (motion.completed) { return; }
             if (motion.keys <= 0)
             {
@@ -224,11 +224,18 @@ namespace U.movin
                 SetKeyframe(motion.key + 1);
             }
 
+
+            /* ----- PERCENT KEYFRAME COMPLETE ----- */
+
             motion.percent = (frame - motion.startFrame) / (motion.endFrame - motion.startFrame);
 
-            /* ----- CUBIC BEZIER ----- */
-            float ease = Ease.CubicBezier(Vector2.zero, motion.currentOutTangent, motion.nextInTangent, Vector2.one, motion.percent);
 
+            /* ----- CUBIC BEZIER ----- */
+
+            float ease = Ease.CubicBezier(Vector2.zero, motion.currentOutTangent, motion.nextInTangent, Vector2.one, motion.percent);
+            
+
+            /* ----- UPDATE POINTS ----- */
 
             for (int i = 0; i < points.Length; i++)
             {
@@ -238,9 +245,20 @@ namespace U.movin
 
             }
 
+
+            /* ----- UPDATE MESH ----- */
+
             UpdateMesh();
         }
 
+
+        public void UpdateOpacity(float opacity)
+        {
+            Color c = renderer.material.color;
+            c.a = opacity * 0.01f;
+
+            renderer.material.color = c;
+        }
 
         public void SetKeyframe(int k = 0)
         {
