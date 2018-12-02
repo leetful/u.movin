@@ -23,6 +23,8 @@ namespace U.movin
 public class Movin
 {
     public GameObject gameObject;
+    public GameObject container;
+
     public Transform transform
     {
         get { return gameObject.transform; }
@@ -33,7 +35,7 @@ public class Movin
     private MovinLayer[] layers;
     private MovinLayer[] layersByIndex;
 
-    public static float scaleFactor = 0.1f;
+    public float scale;
     public bool playing = false;
     public float frameRate = 0;
     public float totalFrames = 0;
@@ -46,17 +48,23 @@ public class Movin
     public int sort;
     public VectorUtils.TessellationOptions options;
 
-    public Movin(Transform parent, string path, int sort = 0, float strokeScale = 0.6f)
+    public Movin(Transform parent, string path, int sort = 0, float scale = 0.1f, float strokeScale = 0.5f)
     {
 
         this.sort = sort;
+        this.scale = scale;
         this.strokeScale = strokeScale;
+
+        content = BodymovinContent.init(path);
 
         gameObject = new GameObject("body - " + path);
         transform.SetParent(parent, false);
-        transform.localScale *= scaleFactor;
+       
+        container = new GameObject("container - " + path);
+        container.transform.SetParent(transform, false);
+        container.transform.localScale *= scale;
+        container.transform.localPosition -= new Vector3(content.w / 2, -(content.h / 2), 0) * scale;
 
-        content = BodymovinContent.init(path);
         frameRate = content.fr;
         totalFrames = content.op;
         layers = new MovinLayer[content.layers.Length];
@@ -115,6 +123,8 @@ public class Movin
         updater.fired += Update;
     }
 
+
+
     public void Play()
     {
         playing = true;
@@ -167,5 +177,16 @@ public class Movin
         {
             layer.ResetKeyframes();
         }
+    }
+
+
+
+    public Transform FindLayer(string n)
+    {
+        foreach (MovinLayer layer in layers)
+        {
+            if (n == layer.content.nm) { return layer.transform;  }
+        }
+        return null;
     }
 }

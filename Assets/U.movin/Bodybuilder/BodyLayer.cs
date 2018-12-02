@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace U.movin
 {
-    public class MovinLayer
+    public class BodyLayer
     {
         public GameObject gameObject;
         public Transform transform
@@ -11,10 +11,9 @@ namespace U.movin
             get { return gameObject.transform; }
         }
 
-        public int sort;
-        public Movin movin;
+        public Movin body;
         public BodymovinLayer content;
-        public MovinShape[] shapes;
+        public BodyShape[] shapes;
 
         public MotionProps mpos;
         public MotionProps mscale;
@@ -23,6 +22,7 @@ namespace U.movin
         public MotionProps mrotz;
         public MotionProps mopacity;
 
+        public Vector3 positionOffset;
         public Vector3 finalRotation = Vector3.zero;
 
         public bool positionAnimated = false;
@@ -33,22 +33,19 @@ namespace U.movin
         public bool opacityAnimated = false;
 
 
-        public MovinLayer(Movin movin, BodymovinLayer layer, int sort = 0)
+        public BodyLayer(Movin body, BodymovinLayer layer)
         {
-            this.movin = movin;
+            this.body = body;
             this.content = layer;
-            this.sort = sort;
 
             gameObject = new GameObject(content.ind + "  " + content.nm);
-            transform.SetParent(movin.container.transform, false);
+            transform.SetParent(body.transform, false);
 
-            transform.localPosition = content.position;
+            positionOffset = new Vector3(body.content.w / 2, -(body.content.h / 2), 0);
+
+            transform.localPosition = content.position - positionOffset;
             transform.localRotation = content.rotation;
             transform.localScale = content.scale;
-
-            //Debug.Log("name:  " + content.nm + "   movin canvas: " + movin.content.w + " / " + movin.content.h + "   contnet.pos:  " + content.position + "   transform.pos:  " + transform.localPosition);
-            
-
 
             finalRotation = content.rotationEuler;
 
@@ -77,12 +74,12 @@ namespace U.movin
 
             //Debug.Log("layer index:  " + content.ind + "   parent:  " + content.parent);
 
-            shapes = new MovinShape[content.shapes.Length];
+            shapes = new BodyShape[content.shapes.Length];
 
             int j = 0;
             for (int i = content.shapes.Length - 1; i >= 0; i--)
             {
-                MovinShape shape = new MovinShape(this, content.shapes[i]);
+                BodyShape shape = new BodyShape(this, content.shapes[i], 0.85f);
                 shapes[i] = shape;
 
                 //shape.transform.localPosition += new Vector3(0, 0, -32 * j);
@@ -138,7 +135,7 @@ namespace U.movin
 
             /* ----- SEND DOWN UPDATES ----- */
 
-            foreach (MovinShape shape in shapes)
+            foreach (BodyShape shape in shapes)
             {
                 shape.Update(frame);
             }
@@ -207,7 +204,7 @@ namespace U.movin
             /* ----- UPDATE PROPERTY ----- */
 
             if (set == content.positionSets) {
-                transform.localPosition = Value3(m, set, ease);
+                transform.localPosition = Value3(m, set, ease) - positionOffset;
             } else if (set == content.scaleSets)  {
                 transform.localScale = Value3(m, set, ease);
             } else if (set == content.rotationXSets) {
@@ -217,7 +214,7 @@ namespace U.movin
             } else if (set == content.rotationZSets) {
                 finalRotation.z = Value1(m, set, ease);
             } else if (set == content.opacitySets) {
-                foreach (MovinShape s in shapes) {
+                foreach (BodyShape s in shapes) {
                     s.UpdateOpacity(Value1(m, set, ease));
                 }
             }
@@ -249,11 +246,13 @@ namespace U.movin
             if (rotationZAnimated) { SetKeyframe(ref mrotz, content.rotationZSets, 0); }
             if (opacityAnimated) { SetKeyframe(ref mopacity, content.opacitySets, 0); }
 
-            foreach (MovinShape shape in shapes)
+            foreach (BodyShape shape in shapes)
             {
                 shape.ResetKeyframes();
             }
 
         }
+
+
     }
 }
