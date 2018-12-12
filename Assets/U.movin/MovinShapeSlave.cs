@@ -71,20 +71,6 @@ namespace U.movin
 
         }
 
-        public void UpdateStrokeColor(Color c)
-        {
-            stroke.Color = c;
-            props.Stroke = stroke;
-            FillMesh();
-        }
-
-        public void UpdateFillColor(Color c)
-        {
-            fill.Color = c;
-            shape.Fill = fill;
-            FillMesh();
-        }
-
     }
 }
  

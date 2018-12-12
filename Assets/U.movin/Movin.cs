@@ -37,20 +37,29 @@ public class Movin
 
     public float scale;
     public bool playing = false;
+    public bool paused = false;
     public float frameRate = 0;
     public float totalFrames = 0;
 
     public float time = 0;                  // Local time (since animation began)
     public float frame = 0;                 // Animation frame
-    public bool loop = true;
+    public bool loop;
+    public bool complete = false;
+    public float quality;
 
     public float strokeScale;
     public int sort;
     public VectorUtils.TessellationOptions options;
 
-    public Movin(Transform parent, string path, int sort = 0, float scale = 0.1f, float strokeScale = 0.5f)
-    {
 
+    /* ---- EVENTS ---- */
+
+    public System.Action OnComplete;
+
+
+    public Movin(Transform parent, string path, int sort = 0, float scale = 0.1f, float strokeScale = 0.5f, bool loop = true, float quality = 0.4f)
+    {
+        this.loop = loop;
         this.sort = sort;
         this.scale = scale;
         this.strokeScale = strokeScale;
@@ -79,7 +88,8 @@ public class Movin
             StepDistance = 1000.0f,
             MaxCordDeviation = 0.05f,
             MaxTanAngleDeviation = 0.05f,
-            SamplingStepSize = 0.01f
+            // SamplingStepSize = 0.01f
+            SamplingStepSize = quality
         };
 
 
@@ -125,20 +135,7 @@ public class Movin
 
 
 
-    public void Play()
-    {
-        playing = true;
-    }
-
-    public void Stop()
-    {
-        playing = false;
-    }
-
-
-
-
-    public void Update()
+    private void Update()
     {
         if (!playing) { return; }
 
@@ -150,7 +147,10 @@ public class Movin
         if (frame >= totalFrames)
         {
             Stop();
+            
             //Debug.Log("****** COMP Animation done! ******");
+            complete = !loop;
+            OnComplete?.Invoke();
 
             if (loop)
             {
@@ -161,7 +161,11 @@ public class Movin
             return;
         }
 
+        UpdateLayers();
+    }
 
+    public void UpdateLayers()
+    {
         foreach (MovinLayer layer in layers)
         {
             layer.Update(frame);
@@ -169,7 +173,7 @@ public class Movin
     }
 
 
-    public void ResetKeyframes()
+    private void ResetKeyframes()
     {
         time = 0;
 
@@ -181,6 +185,55 @@ public class Movin
 
 
 
+
+
+    /* ------ PUBLIC METHODS ------ */
+
+
+    public void SetColor(Color c, bool fill = true, bool stroke = false)
+    {
+        foreach (MovinLayer layer in layers)
+        {
+            foreach (MovinShape s in layer.shapes)
+            {
+                if (fill)
+                    s.UpdateFillColor(c, true);
+
+                if (stroke)
+                    s.UpdateStrokeColor(c, true);
+            }
+        }
+    }
+
+    public void SetOpacity(float o)
+    {
+        foreach (MovinLayer layer in layers)
+        {
+            foreach (MovinShape s in layer.shapes)
+            {
+                s.UpdateOpacity(o * 100f);
+            }
+        }
+    }
+
+    public void RandomFrame(bool play = false)
+    {
+        int n = Random.Range(0, (int)totalFrames);
+        SetFrame(n, play);
+    }
+    
+    public void SetFrame(int n = 0, bool play = false)
+    {
+        frame = Mathf.Clamp(n, 0, totalFrames);
+        time = frame / frameRate;
+
+        UpdateLayers();
+        
+        if (play)  {
+            playing = true;
+        }
+    }
+
     public Transform FindLayer(string n)
     {
         foreach (MovinLayer layer in layers)
@@ -189,4 +242,29 @@ public class Movin
         }
         return null;
     }
+
+
+    public void Play()
+    {
+        if (complete){
+            complete = false;
+            ResetKeyframes();
+        }
+
+        playing = true;
+        paused = false;
+    }
+
+    public void Pause()
+    {
+        paused = true;
+    }
+
+    public void Stop()
+    {
+        playing = false;
+        paused = false;
+    }
+
+
 }

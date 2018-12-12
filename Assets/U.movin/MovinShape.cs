@@ -237,9 +237,13 @@ namespace U.movin
                 UpdateProperty(frame, ref mfillc, content.fillColorSets);
             }
 
-            if ((animated && !motion.completed) || (strokeColorAnimated && !mstrokec.completed) || (fillColorAnimated && !mfillc.completed))
-                FillMesh();
+            if ((animated && !motion.completed) || (strokeColorAnimated && !mstrokec.completed) || (fillColorAnimated && !mfillc.completed)) {
+                 FillMesh();
 
+            //      geoms = VectorUtils.TessellateScene(scene, options);
+            //    VectorUtils.FillMesh(mesh, geoms, 1.0f);
+            }
+                
 
             if (slaves == null) { return; }
             foreach (MovinShapeSlave slave in slaves)
@@ -340,7 +344,11 @@ namespace U.movin
                     return;
                 }
 
-                SetKeyframe(ref m, set, m.key + 1);
+                while (frame >= m.endFrame){
+                    // Debug.Log("fr > end, eq:  " + frame + " - " + m.startFrame + " / (" + m.endFrame + " - " + m.startFrame + ")   keyframe:  " + m.key );
+                    SetKeyframe(ref m, set, m.key + 1); 
+                    if (m.key == 0){ break; }
+                }
             }
 
 
@@ -366,14 +374,7 @@ namespace U.movin
                 c.g = v.y;
                 c.b = v.z;
 
-                stroke.Color = c;
-                props.Stroke = stroke;
-
-                if (slaves == null) { return; }
-                foreach (MovinShapeSlave slave in slaves)
-                {
-                    slave.UpdateStrokeColor(c);
-                }
+                UpdateStrokeColor(c);
 
             } else if (set == content.fillColorSets) {
                 //Debug.Log("diff:  " + (set[m.key].e.x - set[m.key].s.x).ToString("F4") + "   fnl:  " + (set[m.key].s + ((set[m.key].e - set[m.key].s) * ease)) + "   percent:  " + m.percent + "   ease:  " + ease);
@@ -384,23 +385,49 @@ namespace U.movin
                 c.g = v.y;
                 c.b = v.z;
 
-                fill.Color = c;
-                shape.Fill = fill;
-
-                if (slaves == null) { return; }
-                foreach (MovinShapeSlave slave in slaves)
-                {
-                    slave.UpdateFillColor(c);
-                }
+                UpdateFillColor(c);
             }
 
         }
 
 
+        public void UpdateStrokeColor(Color c, bool fillMesh = false)
+        {
+            stroke.Color = c;
+            props.Stroke = stroke;
+
+            if (fillMesh)
+                FillMesh();
+
+            if (slaves == null) { return; }
+            foreach (MovinShapeSlave slave in slaves)
+            {
+                slave.UpdateStrokeColor(c, true);
+            }
+        }
+
+        public void UpdateFillColor(Color c, bool fillMesh = false)
+        {
+            fill.Color = c;
+            shape.Fill = fill;
+
+            if (fillMesh)
+                FillMesh();
+
+            if (slaves == null) { return; }
+            foreach (MovinShapeSlave slave in slaves)
+            {
+                slave.UpdateFillColor(c, true);
+            }
+        }
+
+
+
+
 
         public Vector3 Value3(MotionProps m, BodymovinAnimatedProperties[] set, float ease)
         {
-            return m.percent < 0 ?
+            return (m.percent < 0 || m.percent > 1) ?
                     set[m.key].s : set[m.key].s + ((set[m.key].e - set[m.key].s) * ease);
         }
 
@@ -465,10 +492,11 @@ namespace U.movin
         {
             prop.completed = false;
             if (prop.keys <= 0) { return; }
+            if (k >= prop.keys) { k = 0; }
 
             prop.key = k;
             prop.startFrame = set[k].t;
-            prop.endFrame = set.Length > k ? set[k + 1].t : prop.startFrame;
+            prop.endFrame = set.Length > k + 1 ? set[k + 1].t : prop.startFrame;
             prop.currentOutTangent = set[k].o;
             prop.nextInTangent = set[k].i;
 

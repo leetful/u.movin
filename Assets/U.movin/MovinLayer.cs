@@ -83,6 +83,7 @@ namespace U.movin
             for (int i = content.shapes.Length - 1; i >= 0; i--)
             {
                 MovinShape shape = new MovinShape(this, content.shapes[i]);
+                shape.UpdateOpacity(content.opacity);
                 shapes[i] = shape;
 
                 //shape.transform.localPosition += new Vector3(0, 0, -32 * j);
@@ -109,10 +110,11 @@ namespace U.movin
         {
             prop.completed = false;
             if (prop.keys <= 0) { return; }
+            if (k >= prop.keys) { k = 0; }
 
             prop.key = k;
             prop.startFrame = set[k].t;
-            prop.endFrame = set.Length > k ? set[k + 1].t : prop.startFrame;
+            prop.endFrame = set.Length > k + 1 ? set[k + 1].t : prop.startFrame;
             prop.currentOutTangent = set[k].o;
             prop.nextInTangent = set[k].i;
 
@@ -190,7 +192,11 @@ namespace U.movin
                     return;
                 }
 
-                SetKeyframe(ref m, set, m.key + 1);
+                while (frame >= m.endFrame){
+                    // Debug.Log("fr > end, eq:  " + frame + " - " + m.startFrame + " / (" + m.endFrame + " - " + m.startFrame + ")   keyframe:  " + m.key );
+                    SetKeyframe(ref m, set, m.key + 1); 
+                    if (m.key == 0){ break; }
+                }
             }
 
 
@@ -228,13 +234,13 @@ namespace U.movin
 
         public Vector3 Value3(MotionProps m, BodymovinAnimatedProperties[] set, float ease)
         {
-            return m.percent < 0 ?
+            return (m.percent < 0 || m.percent > 1) ?
                     set[m.key].s : set[m.key].s + ((set[m.key].e - set[m.key].s) * ease);
         }
 
         public float Value1(MotionProps m, BodymovinAnimatedProperties[] set, float ease)
         {
-            return m.percent < 0 ?
+            return (m.percent < 0 || m.percent > 1) ?
                     set[m.key].sf : set[m.key].sf + ((set[m.key].ef - set[m.key].sf) * ease);
         }
 
