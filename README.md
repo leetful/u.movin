@@ -16,6 +16,7 @@ This framework is still early and doesn't utilize every After Effects attribute 
 - Layer scale
 - Layer opacity 
 
+
 ## Examples
 
 ![Ex1](gifs/thumb.gif)
