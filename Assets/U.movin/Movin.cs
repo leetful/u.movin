@@ -257,6 +257,7 @@ public class Movin
 
     public void Pause()
     {
+        playing = false;
         paused = true;
     }
 
