@@ -18,4 +18,4 @@ This framework is still early and doesn't utilize every After Effects attribute 
 
 ## Examples
 
-![Ex](https://www.dropbox.com/s/ojlnmmoekxj6avm/thumb.gif?dl=0)
+![Ex1](gifs/thumb.gif)
