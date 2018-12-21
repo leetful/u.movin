@@ -14,6 +14,7 @@ namespace U.movin
         public string nm;
 
         public BodymovinLayer[] layers;
+        public int highestLayerIndex;
 
         public static BodymovinContent init(string jsonPath)
         {
@@ -41,6 +42,7 @@ namespace U.movin
         public static void ParseLayers(ref BodymovinContent b, JSONNode n)
         {
             int assetLayers = 0;
+            int highestIndex = 0;
 
             if (n["assets"].Count > 0){
                 foreach (JSONNode d in n["layers"]) {
@@ -62,6 +64,7 @@ namespace U.movin
 
             foreach (JSONNode d in n["layers"]) {
                 BodymovinLayer layer = ParseLayer(d);
+                highestIndex = layer.ind > highestIndex ? layer.ind : highestIndex;
                 b.layers[j] = layer;
 
                 if (layer.refId != null){
@@ -73,6 +76,7 @@ namespace U.movin
                                 BodymovinLayer i = ParseLayer(e);
                                 i.id = a["id"];
                                 i.ind += b.layers.Length + j;
+                                highestIndex = i.ind > highestIndex ? i.ind : highestIndex;
                                 i.startTime = layer.startTime;
                                 
                                 if (i.parent > 0){ 
@@ -92,7 +96,7 @@ namespace U.movin
                 j++;
             }
 
-            
+            b.highestLayerIndex = highestIndex;
         }
 
         public static BodymovinLayer ParseLayer(JSONNode d){

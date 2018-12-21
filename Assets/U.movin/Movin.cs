@@ -95,25 +95,19 @@ public class Movin
 
         /* ----- CREATE LAYERS ----- */
 
-        int highestIndex = 0;
+        int highestIndex = content.highestLayerIndex;
+        layersByIndex = new MovinLayer[highestIndex + 1];
+
         for (int i = 0; i < content.layers.Length; i++)
         {
             MovinLayer layer = new MovinLayer(this, content.layers[i], content.layers.Length - i);
+            
             layers[i] = layer;
-
-            highestIndex = layer.content.ind > highestIndex ? layer.content.ind : highestIndex;
+            layersByIndex[layer.content.ind] = layers[i];
         }
 
         // Debug.Log("highestIndex:  "  + highestIndex);
 
-
-        /* ----- ARRAY BY INDEX ----- */
-
-        layersByIndex = new MovinLayer[highestIndex + 1];
-        for (int i = 0; i < content.layers.Length; i++)
-        {
-            layersByIndex[layers[i].content.ind] = layers[i];
-        }
 
 
         /* ----- SET PARENTS ----- */
