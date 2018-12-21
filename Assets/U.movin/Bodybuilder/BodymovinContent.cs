@@ -41,40 +41,57 @@ namespace U.movin
         public static void ParseLayers(ref BodymovinContent b, JSONNode n)
         {
             int assetLayers = 0;
-            foreach (JSONNode a in n["assets"]) {
-                assetLayers += a["layers"].Count;
+
+            if (n["assets"].Count > 0){
+                foreach (JSONNode d in n["layers"]) {
+                    string r = d["refId"];
+                    if (r != null){
+                        foreach (JSONNode a in n["assets"]) {
+                            if (r == a["id"]){
+                                assetLayers += a["layers"].Count;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
+            
 
             int j = 0;
             b.layers = new BodymovinLayer[n["layers"].Count + assetLayers];
 
             foreach (JSONNode d in n["layers"]) {
-                b.layers[j] = ParseLayer(d);
+                BodymovinLayer layer = ParseLayer(d);
+                b.layers[j] = layer;
+
+                if (layer.refId != null){
+                    foreach (JSONNode a in n["assets"]) {
+                        if (a["id"] == layer.refId){
+                            foreach (JSONNode e in a["layers"]) {
+                                j++;
+
+                                BodymovinLayer i = ParseLayer(e);
+                                i.id = a["id"];
+                                i.ind = j + 1;
+                                if (i.parent > 0){ 
+                                    i.parent += j; 
+                                } else {
+                                    i.parent = layer.ind;
+                                    i.positionOffset = -layer.anchorPoint;
+                                }
+
+                                b.layers[j] = i;
+                                
+                            }
+                            break;
+                        }
+                    }
+                }
+
                 j++;
             }
 
-            foreach (JSONNode a in n["assets"]) {
-                foreach (JSONNode d in a["layers"]) {
-                    BodymovinLayer i = ParseLayer(d);
-                    i.id = a["id"];
-                    i.ind = j + 1;
-                    if (i.parent > 0){ 
-                        i.parent += j; 
-                    } else {
-                        foreach (BodymovinLayer layer in b.layers){
-                            if (layer.refId == i.id){
-                                i.parent = layer.ind;
-                                i.positionOffset = -layer.anchorPoint;
-                                Debug.Log("setting parent... " + i.parent);
-                                break;
-                            }
-                        }
-                    }
-
-                    b.layers[j] = i;
-                    j++;
-                }
-            }
+            
         }
 
         public static BodymovinLayer ParseLayer(JSONNode d){

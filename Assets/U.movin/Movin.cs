@@ -124,6 +124,7 @@ public class Movin
                 continue;
 
             // layers[i].transform.SetParent(layersByIndex[p].transform, false);
+            
             if (layersByIndex[p].content.shapes.Length > 0){
                 layers[i].transform.SetParent(layersByIndex[p].transform.GetChild(0), false);
             } else {
