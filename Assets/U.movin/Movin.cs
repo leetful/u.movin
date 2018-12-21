@@ -175,7 +175,8 @@ public class Movin
     {
         foreach (MovinLayer layer in layers)
         {
-            layer.Update(frame);
+            float f = frame - layer.content.startTime;
+            layer.Update(f);
         }
     }
 

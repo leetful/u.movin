@@ -73,6 +73,8 @@ namespace U.movin
                                 BodymovinLayer i = ParseLayer(e);
                                 i.id = a["id"];
                                 i.ind = j + 1;
+                                i.startTime = layer.startTime;
+                                
                                 if (i.parent > 0){ 
                                     i.parent += j; 
                                 } else {
@@ -81,7 +83,6 @@ namespace U.movin
                                 }
 
                                 b.layers[j] = i;
-                                
                             }
                             break;
                         }
@@ -101,7 +102,8 @@ namespace U.movin
                 inFrame = d["ip"],
                 outFrame = d["op"],
                 blendMode = d["bm"],
-                refId = d["refId"]
+                refId = d["refId"],
+                startTime = d["st"]
             };
 
             ParseShapes(ref i, d);
@@ -539,7 +541,7 @@ namespace U.movin
     {
         public string id;
         public string refId;
-        public int n;
+        public float startTime;
 
         public string nm;
         public BodymovinShape[] shapes;
