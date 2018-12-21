@@ -7,7 +7,7 @@ public class Sample : MonoBehaviour {
 
     void Start () {
 
-        mov = new Movin(transform, "json/rot");
+        mov = new Movin(transform, "json/precomp");
         mov.Play();
 
     }

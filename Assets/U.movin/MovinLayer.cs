@@ -75,7 +75,7 @@ namespace U.movin
 
             /* SHAPES */
 
-            //Debug.Log("layer index:  " + content.ind + "   parent:  " + content.parent);
+            // Debug.Log("layer index:  " + content.ind + "   parent:  " + content.parent);
 
             shapes = new MovinShape[content.shapes.Length];
 

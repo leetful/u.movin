@@ -40,24 +40,52 @@ namespace U.movin
 
         public static void ParseLayers(ref BodymovinContent b, JSONNode n)
         {
+            int assetLayers = 0;
+            foreach (JSONNode a in n["assets"]) {
+                assetLayers += a["layers"].Count;
+            }
+
             int j = 0;
+            b.layers = new BodymovinLayer[n["layers"].Count + assetLayers];
 
-            b.layers = new BodymovinLayer[n["layers"].Count];
-
-            foreach (JSONNode d in n["layers"])
-            {
-                BodymovinLayer i = new BodymovinLayer
-                {
-                    nm = d["nm"],
-                    inFrame = d["ip"],
-                    outFrame = d["op"],
-                    blendMode = d["bm"]
-                };
-
-                ParseShapes(ref i, d);
-                b.layers[j] = i;
+            foreach (JSONNode d in n["layers"]) {
+                b.layers[j] = ParseLayer(d);
                 j++;
             }
+
+            foreach (JSONNode a in n["assets"]) {
+                foreach (JSONNode d in a["layers"]) {
+                    BodymovinLayer i = ParseLayer(d);
+                    i.id = a["id"];
+                    i.ind = j + 1;
+                    if (i.parent > 0){ i.parent += j; }
+
+                    foreach (BodymovinLayer layer in b.layers){
+                        if (layer.refId == i.id){
+                            i.parent = layer.ind;
+                            Debug.Log("setting parent... " + i.parent);
+                            break;
+                        }
+                    }
+
+                    b.layers[j] = i;
+                    j++;
+                }
+            }
+        }
+
+        public static BodymovinLayer ParseLayer(JSONNode d){
+            BodymovinLayer i = new BodymovinLayer
+            {
+                nm = d["nm"],
+                inFrame = d["ip"],
+                outFrame = d["op"],
+                blendMode = d["bm"],
+                refId = d["refId"]
+            };
+
+            ParseShapes(ref i, d);
+            return i;
         }
 
         public static void ParseShapes(ref BodymovinLayer b, JSONNode n)
@@ -486,6 +514,10 @@ namespace U.movin
 
     public struct BodymovinLayer
     {
+        public string id;
+        public string refId;
+        public int n;
+
         public string nm;
         public BodymovinShape[] shapes;
         public int parent;
