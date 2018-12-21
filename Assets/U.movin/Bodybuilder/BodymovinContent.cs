@@ -116,7 +116,10 @@ namespace U.movin
             b.scaleSets = new BodymovinAnimatedProperties[scaleAnimated == 1 ? n["ks"]["s"]["k"].Count : 0];
 
             // 2D Rotation
-            b.rotationEuler = new Vector3(0, 0, -n["ks"]["r"]["k"].AsFloat);
+            if (b.rotationEuler == Vector3.zero){
+                b.rotationEuler = new Vector3(0, 0, -n["ks"]["r"]["k"].AsFloat);
+            }
+            
             int rotation2DAnimated = n["ks"]["r"]["a"].AsInt;
 
             if (rotation2DAnimated > 0){
