@@ -45,10 +45,13 @@ namespace U.movin
             int highestIndex = 0;
 
             if (n["assets"].Count > 0){
-                foreach (JSONNode d in n["layers"]) {
+                for (int q = 0; q < n["layers"].Count; q++) {
+                    JSONNode d = n["layers"][q];
+
                     string r = d["refId"];
                     if (r != null){
-                        foreach (JSONNode a in n["assets"]) {
+                        for (int s = 0; s < n["assets"].Count; s++) {
+                            JSONNode a = n["assets"][s];
                             if (r == a["id"]){
                                 assetLayers += a["layers"].Count;
                                 break;
@@ -62,15 +65,20 @@ namespace U.movin
             int j = 0;
             b.layers = new BodymovinLayer[n["layers"].Count + assetLayers];
 
-            foreach (JSONNode d in n["layers"]) {
+            for (int q = 0; q < n["layers"].Count; q++) {
+                JSONNode d = n["layers"][q];
+                
                 BodymovinLayer layer = ParseLayer(d);
                 highestIndex = layer.ind > highestIndex ? layer.ind : highestIndex;
                 b.layers[j] = layer;
 
                 if (layer.refId != null){
-                    foreach (JSONNode a in n["assets"]) {
+                    for (int c = 0; c < n["assets"].Count; c++) {
+                        JSONNode a = n["assets"][c];
+
                         if (a["id"] == layer.refId){
-                            foreach (JSONNode e in a["layers"]) {
+                            for (int z = 0; z < a["layers"].Count; z++) {
+                                JSONNode e = a["layers"][z];
                                 j++;
 
                                 BodymovinLayer i = ParseLayer(e);
@@ -296,12 +304,12 @@ namespace U.movin
                 b.position = b.positionSets[0].s;
             }
 
-            foreach (JSONNode d in n["shapes"])
-            {
-                BodymovinShape i = new BodymovinShape { ty = d["ty"] };
+            for (int i = 0; i < n["shapes"].Count; i++) {
+                JSONNode d = n["shapes"][i];
+                BodymovinShape s = new BodymovinShape { ty = d["ty"] };
 
-                ParseItems(ref i, d);
-                b.shapes[j] = i;
+                ParseItems(ref s, d);
+                b.shapes[j] = s;
                 j++;
 
             }
@@ -318,8 +326,8 @@ namespace U.movin
             /* ----- CAPTURE MULTIPLE PATHS ----- */
 
             int pathCount = 0;
-            foreach (JSONNode d in n["it"])
-            {
+            for (int i = 0; i < n["it"].Count; i++) {
+                JSONNode d = n["it"][i];
                 if (d["ty"] == "sh") { pathCount += 1; }
             }
 
@@ -329,8 +337,8 @@ namespace U.movin
 
             /* --------- */
 
-            foreach (JSONNode d in n["it"])
-            {
+            for (int m = 0; m < n["it"].Count; m++) {
+                JSONNode d = n["it"][m];
                 BodymovinShapeItem i = new BodymovinShapeItem
                 {
                     ty = d["ty"],
