@@ -110,7 +110,8 @@ public class Movin
 
         /* ----- SET PARENTS ----- */
 
-        foreach (MovinLayer layer in layers){
+        for (int i = 0; i < layers.Length; i++) {
+            MovinLayer layer = layers[i];
             int p = layer.content.parent;
             if (p <= 0){ continue; }
 
@@ -158,10 +159,9 @@ public class Movin
 
     public void UpdateLayers()
     {
-        foreach (MovinLayer layer in layers)
-        {
-            float f = frame - layer.content.startTime;
-            layer.Update(f);
+        for (int i = 0; i < layers.Length; i++) {
+            float f = frame - layers[i].content.startTime;
+            layers[i].Update(f);
         }
     }
 
@@ -170,9 +170,8 @@ public class Movin
     {
         time = 0;
 
-        foreach (MovinLayer layer in layers)
-        {
-            layer.ResetKeyframes();
+        for (int i = 0; i < layers.Length; i++) {
+            layers[i].ResetKeyframes();
         }
     }
 
@@ -185,10 +184,10 @@ public class Movin
 
     public void SetColor(Color c, bool fill = true, bool stroke = false)
     {
-        foreach (MovinLayer layer in layers)
-        {
-            foreach (MovinShape s in layer.shapes)
-            {
+        for (int i = 0; i < layers.Length; i++) {
+            for (int j = 0; j < layers[i].shapes.Length; j++) {
+                MovinShape s = layers[i].shapes[j];
+
                 if (fill)
                     s.UpdateFillColor(c, true);
 
@@ -200,10 +199,9 @@ public class Movin
 
     public void SetOpacity(float o)
     {
-        foreach (MovinLayer layer in layers)
-        {
-            foreach (MovinShape s in layer.shapes)
-            {
+         for (int i = 0; i < layers.Length; i++) {
+            for (int j = 0; j < layers[i].shapes.Length; j++) {
+                MovinShape s = layers[i].shapes[j];
                 s.UpdateOpacity(o * 100f);
             }
         }
@@ -229,9 +227,8 @@ public class Movin
 
     public Transform FindLayer(string n)
     {
-        foreach (MovinLayer layer in layers)
-        {
-            if (n == layer.content.nm) { return layer.transform;  }
+        for (int i = 0; i < layers.Length; i++) {
+            if (n == layers[i].content.nm) { return layers[i].transform;  }
         }
         return null;
     }

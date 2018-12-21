@@ -402,9 +402,8 @@ namespace U.movin
                 FillMesh();
 
             if (slaves == null) { return; }
-            foreach (MovinShapeSlave slave in slaves)
-            {
-                slave.UpdateStrokeColor(c, true);
+            for (int i = 0; i < slaves.Length; i++) {
+                slaves[i].UpdateStrokeColor(c, true);
             }
         }
 
@@ -417,9 +416,8 @@ namespace U.movin
                 FillMesh();
 
             if (slaves == null) { return; }
-            foreach (MovinShapeSlave slave in slaves)
-            {
-                slave.UpdateFillColor(c, true);
+            for (int i = 0; i < slaves.Length; i++) {
+                slaves[i].UpdateFillColor(c, true);
             }
         }
 
@@ -456,8 +454,8 @@ namespace U.movin
             if (fillColorAnimated) { SetKeyframe(ref mfillc, content.fillColorSets, 0); }
 
             if (slaves == null) { return; }
-            foreach (MovinShapeSlave slave in slaves) {
-                slave.ResetKeyframes();
+            for (int i = 0; i < slaves.Length; i++) {
+                slaves[i].ResetKeyframes();
             }
         }
 

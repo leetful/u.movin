@@ -150,9 +150,8 @@ namespace U.movin
 
             /* ----- SEND DOWN UPDATES ----- */
 
-            foreach (MovinShape shape in shapes)
-            {
-                shape.Update(frame);
+            for (int i = 0; i < shapes.Length; i++) {
+                shapes[i].Update(frame);
             }
 
 
@@ -234,8 +233,8 @@ namespace U.movin
             } else if (set == content.rotationZSets) {
                 finalRotation.z = Value1(m, set, ease);
             } else if (set == content.opacitySets) {
-                foreach (MovinShape s in shapes) {
-                    s.UpdateOpacity(Value1(m, set, ease));
+                for (int i = 0; i < shapes.Length; i++) {
+                    shapes[i].UpdateOpacity(Value1(m, set, ease));
                 }
             }
 
@@ -266,9 +265,8 @@ namespace U.movin
             if (rotationZAnimated) { SetKeyframe(ref mrotz, content.rotationZSets, 0); }
             if (opacityAnimated) { SetKeyframe(ref mopacity, content.opacitySets, 0); }
 
-            foreach (MovinShape shape in shapes)
-            {
-                shape.ResetKeyframes();
+            for (int i = 0; i < shapes.Length; i++) {
+                shapes[i].ResetKeyframes();
             }
 
         }
@@ -276,9 +274,8 @@ namespace U.movin
 
         public void ShapesActive(bool on){
             shapesActive = on;
-            foreach (MovinShape shape in shapes)
-            {
-                shape.gameObject.SetActive(on);
+            for (int i = 0; i < shapes.Length; i++) {
+                shapes[i].gameObject.SetActive(on);
             }
         }
     }
