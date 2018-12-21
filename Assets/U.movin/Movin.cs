@@ -104,7 +104,8 @@ public class Movin
             highestIndex = layer.content.ind > highestIndex ? layer.content.ind : highestIndex;
         }
 
-        Debug.Log("highestIndex:  "  + highestIndex);
+        // Debug.Log("highestIndex:  "  + highestIndex);
+
 
         /* ----- ARRAY BY INDEX ----- */
 
@@ -117,20 +118,19 @@ public class Movin
 
         /* ----- SET PARENTS ----- */
 
-        for (int i = 0; i < content.layers.Length; i++)
-        {
-            int p = layers[i].content.parent;
-            if (p <= 0) continue;
-            if (highestIndex < p) continue;
+        foreach (MovinLayer layer in layers){
+            int p = layer.content.parent;
+            if (p <= 0){ continue; }
 
-            // layers[i].transform.SetParent(layersByIndex[p].transform, false);
-            Debug.Log("p: " + p);
-            if (layersByIndex[p].content.shapes.Length > 0){
-                layers[i].transform.SetParent(layersByIndex[p].transform.GetChild(0), false);
-            } else {
-                layers[i].transform.SetParent(layersByIndex[p].transform, false);
-            }
-            
+            // foreach (MovinLayer l in layers) {
+            //     if (l.content.ind == p){
+            //         layer.transform.SetParent(l.content.shapes.Length > 0 ? l.transform.GetChild(0) : l.transform, false);
+            //         break; 
+            //     }
+            // }
+
+            layer.transform.SetParent(layersByIndex[p].content.shapes.Length > 0 ? 
+                layersByIndex[p].transform.GetChild(0) : layersByIndex[p].transform, false);
         }
 
 

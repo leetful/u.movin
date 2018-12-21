@@ -72,11 +72,11 @@ namespace U.movin
 
                                 BodymovinLayer i = ParseLayer(e);
                                 i.id = a["id"];
-                                i.ind = j + 1;
+                                i.ind += b.layers.Length + j;
                                 i.startTime = layer.startTime;
                                 
                                 if (i.parent > 0){ 
-                                    i.parent += j; 
+                                    i.parent += b.layers.Length + j + 1;
                                 } else {
                                     i.parent = layer.ind;
                                     i.positionOffset = -layer.anchorPoint;
@@ -105,7 +105,7 @@ namespace U.movin
                 refId = d["refId"],
                 startTime = d["st"]
             };
-
+            
             ParseShapes(ref i, d);
             return i;
         }
