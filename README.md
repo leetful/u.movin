@@ -21,3 +21,15 @@ This framework is still early and doesn't utilize every After Effects attribute 
 ## Examples
 
 ![Ex1](gifs/thumb.gif)
+
+
+## Todo
+
+- Rotation (2D)
+- Precomps
+- Masking
+- Parametric shapes
+- Stroke size
+- Stroke width
+- Stroke opacity
+- Fill opacity

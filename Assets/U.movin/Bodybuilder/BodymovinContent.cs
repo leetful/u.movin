@@ -84,6 +84,15 @@ namespace U.movin
             int scaleAnimated = n["ks"]["s"]["a"].AsInt;
             b.scaleSets = new BodymovinAnimatedProperties[scaleAnimated == 1 ? n["ks"]["s"]["k"].Count : 0];
 
+            // 2D Rotation
+            b.rotationEuler = new Vector3(0, 0, -n["ks"]["r"]["k"].AsFloat);
+            int rotation2DAnimated = n["ks"]["r"]["a"].AsInt;
+
+            if (rotation2DAnimated > 0){
+                b.rotationZSets = new BodymovinAnimatedProperties[n["ks"]["r"]["k"].Count];
+            }
+
+            // Animated opacity
             if (b.opacitySets.Length > 0)
             {
                 for (int i = 0; i < n["ks"]["o"]["k"].Count; i++)
@@ -103,6 +112,7 @@ namespace U.movin
                 }
             }
 
+            // Rotation X
             if (b.rotationXSets.Length > 0)
             {
                 for (int i = 0; i < n["ks"]["rx"]["k"].Count; i++)
@@ -125,6 +135,7 @@ namespace U.movin
             }
 
 
+            // Rotation Y
             if (b.rotationYSets.Length > 0)
             {
                 for (int i = 0; i < n["ks"]["ry"]["k"].Count; i++)
@@ -147,11 +158,14 @@ namespace U.movin
             }
 
 
+            // Rotation Z
             if (b.rotationZSets.Length > 0)
             {
-                for (int i = 0; i < n["ks"]["rz"]["k"].Count; i++)
+                string r = rotation2DAnimated > 0 ? "r" : "rz";
+
+                for (int i = 0; i < n["ks"][r]["k"].Count; i++)
                 {
-                    JSONNode k = n["ks"]["rz"]["k"][i];
+                    JSONNode k = n["ks"][r]["k"][i];
                     b.rotationZSets[i] = new BodymovinAnimatedProperties
                     {
                         t = k["t"],
