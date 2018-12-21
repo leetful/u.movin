@@ -255,6 +255,8 @@ namespace U.movin
 
         public void UpdateOpacity(float opacity)
         {
+            if (renderer == null) return;
+            
             Color c = renderer.material.color;
             c.a = opacity * 0.01f;
 
