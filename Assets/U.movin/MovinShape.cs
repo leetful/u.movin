@@ -178,8 +178,8 @@ namespace U.movin
             BezierPathSegment[] segs = new BezierPathSegment[cnt];
 
             int i = 0;
-            foreach (BodyPoint point in pts)
-            {
+            for (int j = 0; j < pts.Length; j++) {
+                BodyPoint point = pts[j];
 
                 // Next point...
 
@@ -246,9 +246,8 @@ namespace U.movin
                 
 
             if (slaves == null) { return; }
-            foreach (MovinShapeSlave slave in slaves)
-            {
-                slave.Update(frame);
+            for (int i = 0; i < slaves.Length; i++) {
+                slaves[i].Update(frame);
             }
         }
 
