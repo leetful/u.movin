@@ -58,13 +58,16 @@ namespace U.movin
                     BodymovinLayer i = ParseLayer(d);
                     i.id = a["id"];
                     i.ind = j + 1;
-                    if (i.parent > 0){ i.parent += j; }
-
-                    foreach (BodymovinLayer layer in b.layers){
-                        if (layer.refId == i.id){
-                            i.parent = layer.ind;
-                            Debug.Log("setting parent... " + i.parent);
-                            break;
+                    if (i.parent > 0){ 
+                        i.parent += j; 
+                    } else {
+                        foreach (BodymovinLayer layer in b.layers){
+                            if (layer.refId == i.id){
+                                i.parent = layer.ind;
+                                i.positionOffset = -layer.anchorPoint;
+                                Debug.Log("setting parent... " + i.parent);
+                                break;
+                            }
                         }
                     }
 
@@ -523,6 +526,7 @@ namespace U.movin
         public int parent;
         public int ind;
 
+        public Vector3 positionOffset;
         public Vector3 anchorPoint;
 
         public Vector3 position;

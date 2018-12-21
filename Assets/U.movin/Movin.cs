@@ -120,13 +120,16 @@ public class Movin
         for (int i = 0; i < content.layers.Length; i++)
         {
             int p = layers[i].content.parent;
-            Debug.Log("layer:::: " + layers[i].content.nm + " ::::: " + p);
             if (p <= 0)
                 continue;
 
-            Debug.Log("i:  " + i + "  " + layers[i].content.nm + "  parenting   p: " + p + "  " + layersByIndex[p].content.nm);
-            layers[i].transform.SetParent(layersByIndex[p].transform, false);
-
+            // layers[i].transform.SetParent(layersByIndex[p].transform, false);
+            if (layersByIndex[p].transform.childCount > 0){
+                layers[i].transform.SetParent(layersByIndex[p].transform.GetChild(0), false);
+            } else {
+                layers[i].transform.SetParent(layersByIndex[p].transform, false);
+            }
+            
         }
 
 

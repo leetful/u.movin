@@ -11,6 +11,8 @@ namespace U.movin
             get { return gameObject.transform; }
         }
 
+        public Vector3 positionOffset = Vector3.zero;
+
         public int sort;
         public Movin movin;
         public BodymovinLayer content;
@@ -42,7 +44,9 @@ namespace U.movin
             gameObject = new GameObject(content.ind + "  " + content.nm);
             transform.SetParent(movin.container.transform, false);
 
-            transform.localPosition = content.position;
+            positionOffset = content.positionOffset;
+            
+            transform.localPosition = content.position + positionOffset;
             transform.localRotation = content.rotation;
             transform.localScale = content.scale;
 
@@ -213,7 +217,7 @@ namespace U.movin
             /* ----- UPDATE PROPERTY ----- */
 
             if (set == content.positionSets) {
-                transform.localPosition = Value3(m, set, ease);
+                transform.localPosition = Value3(m, set, ease) + positionOffset;
             } else if (set == content.scaleSets)  {
                 transform.localScale = Value3(m, set, ease);
             } else if (set == content.rotationXSets) {
