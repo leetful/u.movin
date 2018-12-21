@@ -17,6 +17,7 @@ namespace U.movin
         public Movin movin;
         public BodymovinLayer content;
         public MovinShape[] shapes;
+        public bool shapesActive = true;
 
         public MotionProps mpos;
         public MotionProps mscale;
@@ -132,12 +133,17 @@ namespace U.movin
 
             /* ----- IN + OUT POINTS FOR LAYER ----- */
 
-            if (!gameObject.activeInHierarchy && frame >= content.inFrame) { gameObject.SetActive(true); }
+            if (!gameObject.activeInHierarchy && frame >= content.inFrame) { 
+                gameObject.SetActive(true);
+                // ShapesActive(true); 
+            }
+
             if (!gameObject.activeInHierarchy) { return; }
 
             if (gameObject.activeInHierarchy && (frame >= content.outFrame || frame < content.inFrame))
             {
                 gameObject.SetActive(false);
+                // ShapesActive(false);
                 return;
             }
 
@@ -175,6 +181,7 @@ namespace U.movin
                 transform.localRotation = Quaternion.Euler(finalRotation);
             }
         }
+        
 
         public void UpdateProperty(float frame, ref MotionProps m, BodymovinAnimatedProperties[] set)
         {
@@ -264,6 +271,15 @@ namespace U.movin
                 shape.ResetKeyframes();
             }
 
+        }
+
+
+        public void ShapesActive(bool on){
+            shapesActive = on;
+            foreach (MovinShape shape in shapes)
+            {
+                shape.gameObject.SetActive(on);
+            }
         }
     }
 }

@@ -95,8 +95,8 @@ public class Movin
 
         /* ----- CREATE LAYERS ----- */
 
-        int highestIndex = content.highestLayerIndex;
-        layersByIndex = new MovinLayer[highestIndex + 1];
+        layersByIndex = new MovinLayer[content.highestLayerIndex + 1];
+        // Debug.Log("highestIndex:  "  + content.highestLayerIndex);
 
         for (int i = 0; i < content.layers.Length; i++)
         {
@@ -106,22 +106,13 @@ public class Movin
             layersByIndex[layer.content.ind] = layers[i];
         }
 
-        // Debug.Log("highestIndex:  "  + highestIndex);
-
-
+        
 
         /* ----- SET PARENTS ----- */
 
         foreach (MovinLayer layer in layers){
             int p = layer.content.parent;
             if (p <= 0){ continue; }
-
-            // foreach (MovinLayer l in layers) {
-            //     if (l.content.ind == p){
-            //         layer.transform.SetParent(l.content.shapes.Length > 0 ? l.transform.GetChild(0) : l.transform, false);
-            //         break; 
-            //     }
-            // }
 
             layer.transform.SetParent(layersByIndex[p].content.shapes.Length > 0 ? 
                 layersByIndex[p].transform.GetChild(0) : layersByIndex[p].transform, false);
