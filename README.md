@@ -41,7 +41,8 @@ The first parameter is the transform that will contain the vector shapes, the se
 
 ## Examples
 
-![Ex1](gifs/thumb.gif)
+![Ex1](gifs/samurai.gif)
+![Ex2](gifs/game.gif)
 
 
 ## TODO
