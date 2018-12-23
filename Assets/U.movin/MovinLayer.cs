@@ -25,6 +25,7 @@ namespace U.movin
         public MotionProps mroty;
         public MotionProps mrotz;
         public MotionProps mopacity;
+        public MotionProps manchor;
 
         public Vector3 finalRotation = Vector3.zero;
 
@@ -34,8 +35,10 @@ namespace U.movin
         public bool rotationYAnimated = false;
         public bool rotationZAnimated = false;
         public bool opacityAnimated = false;
+        public bool anchorAnimated = false;
 
         public float currentOpacity;
+        public Vector3 currentAnchor;
 
         public MovinLayer(Movin movin, BodymovinLayer layer, int sort = 0)
         {
@@ -52,30 +55,20 @@ namespace U.movin
             transform.localRotation = content.rotation;
             transform.localScale = content.scale;
 
-            //Debug.Log("name:  " + content.nm + "   movin canvas: " + movin.content.w + " / " + movin.content.h + "   contnet.pos:  " + content.position + "   transform.pos:  " + transform.localPosition);
-            
-
-
             finalRotation = content.rotationEuler;
 
 
-            /* POSITION ANIM SETUP */
+            /* ANIM SETUP */
 
             MotionSetup(ref positionAnimated, ref mpos, content.positionSets);
-
-            /* SCALE ANIM SETUP */
-
+            MotionSetup(ref anchorAnimated, ref manchor, content.anchorSets);
             MotionSetup(ref scaleAnimated, ref mscale, content.scaleSets);
-
-            /* ROTATION ANIM SETUP */
-
             MotionSetup(ref rotationXAnimated, ref mrotx, content.rotationXSets);
             MotionSetup(ref rotationYAnimated, ref mroty, content.rotationYSets);
             MotionSetup(ref rotationZAnimated, ref mrotz, content.rotationZSets);
-
-            /* OPACITY ANIM SETUP */
-
             MotionSetup(ref opacityAnimated, ref mopacity, content.opacitySets);
+
+            currentAnchor = content.anchorPoint;
             currentOpacity = content.opacity;
 
 
@@ -122,7 +115,7 @@ namespace U.movin
             prop.currentOutTangent = set[k].o;
             prop.nextInTangent = set[k].i;
 
-            bool v3 = (set == content.positionSets || set == content.scaleSets);
+            bool v3 = (set == content.positionSets || set == content.scaleSets || set == content.anchorSets);
             
             prop.startValue = v3 ? set[k].s : new Vector3(set[k].sf, 0, 0);
             prop.endValue = v3 ? set[k].e : new Vector3(set[k].ef, 0, 0);
@@ -164,6 +157,9 @@ namespace U.movin
             }
             if (positionAnimated && !mpos.completed) {
                 UpdateProperty(frame, ref mpos, content.positionSets);
+            }
+            if (anchorAnimated && !manchor.completed) {
+                UpdateProperty(frame, ref manchor, content.anchorSets);
             }
             if (scaleAnimated && !mscale.completed) {
                 UpdateProperty(frame, ref mscale, content.scaleSets);
@@ -226,6 +222,15 @@ namespace U.movin
 
             if (set == content.positionSets) {
                 transform.localPosition = Value3(m, ease) + positionOffset;
+            } else if (set == content.anchorSets)  {
+                // transform.localScale = Value3(m, ease);
+                Vector3 v = Value3(m, ease);
+                currentAnchor = v;
+
+                for (int i = 0; i < shapes.Length; i++) {
+                    // shapes[i].UpdateOpacity(v);
+                    shapes[i].transform.localPosition = -v;
+                }
             } else if (set == content.scaleSets)  {
                 transform.localScale = Value3(m, ease);
             } else if (set == content.rotationXSets) {
@@ -264,6 +269,7 @@ namespace U.movin
         public void ResetKeyframes()
         {
             if (positionAnimated) { SetKeyframe(ref mpos, content.positionSets, 0); }
+            if (anchorAnimated) { SetKeyframe(ref manchor, content.anchorSets, 0); }
             if (scaleAnimated) { SetKeyframe(ref mscale, content.scaleSets, 0); }
             if (rotationXAnimated) { SetKeyframe(ref mrotx, content.rotationXSets, 0); }
             if (rotationYAnimated) { SetKeyframe(ref mroty, content.rotationYSets, 0); }
@@ -293,6 +299,9 @@ namespace U.movin
             
             positionAnimated = true;
             CreateKeyframe(ref mpos, 0, duration, ease, transform.localPosition, blendLayer.position + positionOffset);
+
+            anchorAnimated = true;
+            CreateKeyframe(ref manchor, 0, duration, ease, currentAnchor, blendLayer.anchorPoint);
 
             scaleAnimated = true;
             CreateKeyframe(ref mscale, 0, duration, ease, transform.localScale, blendLayer.scale);
@@ -346,6 +355,7 @@ namespace U.movin
             finalRotation = content.rotationEuler;
 
             MotionSetup(ref positionAnimated, ref mpos, content.positionSets);
+            MotionSetup(ref anchorAnimated, ref manchor, content.anchorSets);
             MotionSetup(ref scaleAnimated, ref mscale, content.scaleSets);
             MotionSetup(ref rotationXAnimated, ref mrotx, content.rotationXSets);
             MotionSetup(ref rotationYAnimated, ref mroty, content.rotationYSets);

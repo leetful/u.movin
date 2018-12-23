@@ -12,12 +12,14 @@ While not yet utilizing all AE attributes and properties, this library currently
 - Shape paths
 - Shape fill color
 - Shape stroke color
+- Layer anchor points
 - Layer position
 - Layer rotation (X, Y, Z)
 - Layer scale
 - Layer opacity 
+- Blending between compositions
 - Single layer precompositions **[IN PROGRESS]**
-- Blending between json animations **[IN PROGRESS]**
+
 
 
 ## Examples
@@ -36,21 +38,19 @@ While not yet utilizing all AE attributes and properties, this library currently
 **Third**, add the **json** [exported from Bodymovin](https://www.youtube.com/watch?v=5XMUJdjI0L8) to your Resources folder. 
 
 
-Then get started with -
+###### Then get started with:
 
 ```
 Movin mov = new Movin(transform, "json/samurai");
 mov.Play();
 ```
 
-The first parameter is the transform that will contain the vector shapes, the second is correct path to json file (located under **Resources/**)
+The first parameter is the transform that will contain the shapes, the second is the path to json file **(must be located under 'Resources')**
 
 ## TODO
 
-
-- Layer anchor point animation
 - Nested Precomps
-- Masking / Alpha Matte
+- Masking / Alpha Mattes
 - Parametric shapes
 - Stroke size, width, opacity
 - Fill opacity

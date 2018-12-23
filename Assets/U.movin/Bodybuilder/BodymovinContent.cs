@@ -146,6 +146,10 @@ namespace U.movin
             int scaleAnimated = n["ks"]["s"]["a"].AsInt;
             b.scaleSets = new BodymovinAnimatedProperties[scaleAnimated == 1 ? n["ks"]["s"]["k"].Count : 0];
 
+            int anchorAnimated = n["ks"]["a"]["a"].AsInt;
+            b.anchorSets = new BodymovinAnimatedProperties[anchorAnimated == 1 ? n["ks"]["a"]["k"].Count : 0];
+
+
             // 2D Rotation
             if (b.rotationEuler == Vector3.zero){
                 b.rotationEuler = new Vector3(0, 0, -n["ks"]["r"]["k"].AsFloat);
@@ -250,6 +254,7 @@ namespace U.movin
             b.rotation = Quaternion.Euler(b.rotationEuler);
 
 
+            // Scale
             if (b.scaleSets.Length > 0)
             {
                 for (int i = 0; i < n["ks"]["s"]["k"].Count; i++)
@@ -277,7 +282,7 @@ namespace U.movin
             }
 
 
-
+            // Position
             if (b.positionSets.Length > 0)
             {
                 for (int i = 0; i < n["ks"]["p"]["k"].Count; i++)
@@ -304,6 +309,35 @@ namespace U.movin
                 b.position = b.positionSets[0].s;
             }
 
+
+
+            // Anchor point
+            if (b.anchorSets.Length > 0)
+            {
+                for (int i = 0; i < n["ks"]["a"]["k"].Count; i++)
+                {
+                    JSONNode k = n["ks"]["a"]["k"][i];
+                    b.anchorSets[i] = new BodymovinAnimatedProperties
+                    {
+                        t = k["t"],
+                        i = k["i"],
+                        o = k["o"],
+                        to = k["to"],
+                        ti = k["ti"],
+
+                        s = k["s"],
+                        e = k["e"]
+                    };
+
+                    b.anchorSets[i].s.y = -b.anchorSets[i].s.y;
+                    b.anchorSets[i].e.y = -b.anchorSets[i].e.y;
+                }
+
+                b.anchorPoint = b.anchorSets[0].s;
+            }
+
+
+            // Items
             for (int i = 0; i < n["shapes"].Count; i++) {
                 JSONNode d = n["shapes"][i];
                 BodymovinShape s = new BodymovinShape { ty = d["ty"] };
@@ -561,7 +595,9 @@ namespace U.movin
         public int ind;
 
         public Vector3 positionOffset;
+        
         public Vector3 anchorPoint;
+        public BodymovinAnimatedProperties[] anchorSets;
 
         public Vector3 position;
         public BodymovinAnimatedProperties[] positionSets;
