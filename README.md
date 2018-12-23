@@ -49,6 +49,7 @@ The first parameter is the transform that will contain the shapes, the second is
 
 ## TODO
 
+- Concurrent playing composition blending
 - Nested Precomps
 - Masking / Alpha Mattes
 - Parametric shapes

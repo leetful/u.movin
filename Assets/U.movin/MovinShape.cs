@@ -567,7 +567,7 @@ namespace U.movin
             /* SHAPE PATH */
           
             animated = true; 
-            CreatePathKeyframe(ref motion, 0, duration, ease, 
+            CreatePathKeyframe(ref motion, 0, duration + 0, ease, 
                 (BodyPoint[])blendContent.paths[0].points.Clone()
             );
 
