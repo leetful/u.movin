@@ -289,37 +289,35 @@ namespace U.movin
         /* ---- BLENDING ---- */
 
 
-        public void CreateBlendKeyframe(BodymovinLayer blendLayer, float duration){
-            Vector2 outTangent = new Vector2(1, 1);
-            Vector2 inTangent = new Vector2(0, 0);
-
+        public void CreateBlendKeyframe(BodymovinLayer blendLayer, float duration, Vector2[] ease){
+            
             positionAnimated = true;
-            CreateKeyframe(ref mpos, 0, duration, outTangent, inTangent, transform.localPosition, blendLayer.position + positionOffset);
+            CreateKeyframe(ref mpos, 0, duration, ease, transform.localPosition, blendLayer.position + positionOffset);
 
             scaleAnimated = true;
-            CreateKeyframe(ref mscale, 0, duration, outTangent, inTangent, transform.localScale, blendLayer.scale);
+            CreateKeyframe(ref mscale, 0, duration, ease, transform.localScale, blendLayer.scale);
 
             rotationXAnimated = true;
-            CreateKeyframe(ref mrotx, 0, duration, outTangent, inTangent, new Vector3(finalRotation.x, 0, 0), new Vector3(blendLayer.rotationEuler.x, 0, 0));
+            CreateKeyframe(ref mrotx, 0, duration, ease, new Vector3(finalRotation.x, 0, 0), new Vector3(blendLayer.rotationEuler.x, 0, 0));
 
             rotationYAnimated = true;
-            CreateKeyframe(ref mroty, 0, duration, outTangent, inTangent, new Vector3(finalRotation.y, 0, 0), new Vector3(blendLayer.rotationEuler.y, 0, 0));
+            CreateKeyframe(ref mroty, 0, duration, ease, new Vector3(finalRotation.y, 0, 0), new Vector3(blendLayer.rotationEuler.y, 0, 0));
 
             rotationZAnimated = true;
-            CreateKeyframe(ref mrotz, 0, duration, outTangent, inTangent, new Vector3(finalRotation.z, 0, 0), new Vector3(blendLayer.rotationEuler.z, 0, 0));
+            CreateKeyframe(ref mrotz, 0, duration, ease, new Vector3(finalRotation.z, 0, 0), new Vector3(blendLayer.rotationEuler.z, 0, 0));
 
             opacityAnimated = true;
-            CreateKeyframe(ref mopacity, 0, duration, outTangent, inTangent, new Vector3(currentOpacity, 0, 0), new Vector3(blendLayer.opacity, 0, 0));
+            CreateKeyframe(ref mopacity, 0, duration, ease, new Vector3(currentOpacity, 0, 0), new Vector3(blendLayer.opacity, 0, 0));
 
             for (int i = 0; i < shapes.Length; i++) {
-                shapes[i].CreateBlendKeyframe(blendLayer.shapes[i], duration);
+                shapes[i].CreateBlendKeyframe(blendLayer.shapes[i], duration, ease);
             }
 
         }
 
 
         public void CreateKeyframe(ref MotionProps prop, float start, float end, 
-            Vector2 outTangent, Vector2 inTangent, Vector3 startValue, Vector3 endValue, int k = 0)
+            Vector2[] ease, Vector3 startValue, Vector3 endValue, int k = 0)
         {
             prop.completed = false;
             prop.keys = 1;
@@ -327,8 +325,8 @@ namespace U.movin
             prop.key = k;
             prop.startFrame = start;
             prop.endFrame = end;
-            prop.currentOutTangent = outTangent;
-            prop.nextInTangent = inTangent;
+            prop.currentOutTangent = ease[0];
+            prop.nextInTangent = ease[1];
 
             prop.startValue = startValue;
             prop.endValue = endValue;

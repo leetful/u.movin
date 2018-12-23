@@ -7,6 +7,10 @@ namespace U.movin
 {
     public static class Ease
     {
+        public static Vector2[] Linear = new Vector2[2]{ new Vector2(1, 1), new Vector2(0, 0) };
+        public static Vector2[] StrongInOut = new Vector2[2]{ new Vector2(0.7f, 0), new Vector2(0.3f, 1) };
+        public static Vector2[] StrongOut = new Vector2[2]{ new Vector2(0.167f, 0.167f), new Vector2(0.3f, 1) };
+
         public static float CubicBezier(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, float p)
         {
             float v;

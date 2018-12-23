@@ -562,15 +562,12 @@ namespace U.movin
         /* ---- BLENDING ---- */
 
 
-        public void CreateBlendKeyframe(BodymovinShape blendContent, float duration){
-          
-            Vector2 outTangent = new Vector2(1, 1);
-            Vector2 inTangent = new Vector2(0, 0);
-
+        public void CreateBlendKeyframe(BodymovinShape blendContent, float duration, Vector2[] ease){
+            
             /* SHAPE PATH */
           
             animated = true; 
-            CreatePathKeyframe(ref motion, 0, duration, outTangent, inTangent, 
+            CreatePathKeyframe(ref motion, 0, duration, ease, 
                 (BodyPoint[])blendContent.paths[0].points.Clone()
             );
 
@@ -580,18 +577,18 @@ namespace U.movin
             Vector3 stClr = (blendContent.strokeColor == null) ? Vector3.one : new Vector3(blendContent.strokeColor[0], blendContent.strokeColor[1], blendContent.strokeColor[2]);
             
             strokeColorAnimated = true;
-            CreateKeyframe(ref mstrokec, 0, duration, outTangent, inTangent, currentStrokeColor, stClr);
+            CreateKeyframe(ref mstrokec, 0, duration, ease, currentStrokeColor, stClr);
 
             Vector3 flClr = (blendContent.fillColor == null) ? Vector3.one : new Vector3(blendContent.fillColor[0], blendContent.fillColor[1], blendContent.fillColor[2]);
 
             fillColorAnimated = true;
-            CreateKeyframe(ref mfillc, 0, duration, outTangent, inTangent, currentFillColor, flClr);
+            CreateKeyframe(ref mfillc, 0, duration, ease, currentFillColor, flClr);
 
         }
 
 
         public void CreateKeyframe(ref MotionProps prop, float start, float end, 
-            Vector2 outTangent, Vector2 inTangent, Vector3 startValue, Vector3 endValue, int k = 0)
+            Vector2[] ease, Vector3 startValue, Vector3 endValue, int k = 0)
         {
             prop.completed = false;
             prop.keys = 1;
@@ -599,14 +596,14 @@ namespace U.movin
             prop.key = k;
             prop.startFrame = start;
             prop.endFrame = end;
-            prop.currentOutTangent = outTangent;
-            prop.nextInTangent = inTangent;
+            prop.currentOutTangent = ease[0];
+            prop.nextInTangent = ease[1];
 
             prop.startValue = startValue;
             prop.endValue = endValue;
         }
 
-        public void CreatePathKeyframe(ref MotionProps prop, float start, float end, Vector2 outTangent, Vector2 inTangent, BodyPoint[] pts, int k = 0)
+        public void CreatePathKeyframe(ref MotionProps prop, float start, float end, Vector2[] ease, BodyPoint[] pts, int k = 0)
         {
             prop.completed = false;
             prop.keys = 1;
@@ -614,8 +611,8 @@ namespace U.movin
             prop.key = k;
             prop.startFrame = start;
             prop.endFrame = end;
-            prop.currentOutTangent = outTangent;
-            prop.nextInTangent = inTangent;
+            prop.currentOutTangent = ease[0];
+            prop.nextInTangent = ease[1];
 
             startPoints = points;
             endPoints = pts;

@@ -55,7 +55,7 @@ public class Movin
     public VectorUtils.TessellationOptions options;
 
 
-    /* ---- EVENTS ---- */
+    /* ---- BLENDING ---- */
 
     public bool blending = false;
     public BodymovinContent blendContent;
@@ -274,7 +274,7 @@ public class Movin
 
 
 
-    public void Blend(string path, float duration = 30f){
+    public void Blend(string path, float duration = 30f, Vector2[] ease = null){
         BodymovinContent blend = BodymovinContent.init(path);
 
         loop = false;
@@ -287,8 +287,12 @@ public class Movin
         blendPath = path;
         blendContent = blend;
 
+        if (ease == null){ 
+            ease = Ease.StrongOut; 
+        }
+
         for (int i = 0; i < layers.Length; i++) {
-            layers[i].CreateBlendKeyframe(blend.layers[i], duration);
+            layers[i].CreateBlendKeyframe(blend.layers[i], duration, ease);
         }
 
         Play();
