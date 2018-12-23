@@ -16,7 +16,14 @@ While not yet utilizing all AE attributes and properties, this library currently
 - Layer rotation (X, Y, Z)
 - Layer scale
 - Layer opacity 
-- Single layer precompositions (underway)
+- Single layer precompositions **[IN PROGRESS]**
+
+
+## Examples
+
+![Ex1](gifs/samurai.gif)
+
+![Ex2](gifs/game.gif)
 
 
 ## Usage
@@ -37,15 +44,6 @@ mov.Play();
 
 The first parameter is the transform that will contain the vector shapes, the second is correct path to json file (located under **Resources/**)
 
-
-
-## Examples
-
-![Ex1](gifs/samurai.gif)
-
-![Ex2](gifs/game.gif)
-
-
 ## TODO
 
 - Nested Precomps
@@ -54,3 +52,5 @@ The first parameter is the transform that will contain the vector shapes, the se
 - Stroke size, width, opacity
 - Fill opacity
 - Time remapping
+- Animating bitmap layers
+- Blend mode support
