@@ -3,7 +3,7 @@
 
 ## Unity animated vector graphics from After Effects shapes.
 
-Inspired by [Lottie](https://github.com/airbnb/lottie-web) frameworks that take animation data from After Effects to create animated vector sequences for web/mobile, with the help of the [Vector Graphics](https://docs.unity3d.com/Packages/com.unity.vectorgraphics@1.0/manual/index.html) package this library aims to bring [the same](https://www.lottiefiles.com/) **and more** to Unity.
+Inspired by [Lottie](https://github.com/airbnb/lottie-web) frameworks that take animation data from After Effects to create animated vector sequences for web/mobile. With the help of the [Vector Graphics](https://docs.unity3d.com/Packages/com.unity.vectorgraphics@1.0/manual/index.html) package, this library aims to bring [the same](https://www.lottiefiles.com/) and more to Unity.
 
 ## Features
 
