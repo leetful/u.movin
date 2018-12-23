@@ -17,6 +17,7 @@ While not yet utilizing all AE attributes and properties, this library currently
 - Layer scale
 - Layer opacity 
 - Single layer precompositions **[IN PROGRESS]**
+- Blending between json animations **[IN PROGRESS]**
 
 
 ## Examples
@@ -46,6 +47,8 @@ The first parameter is the transform that will contain the vector shapes, the se
 
 ## TODO
 
+
+- Layer anchor point animation
 - Nested Precomps
 - Masking / Alpha Matte
 - Parametric shapes

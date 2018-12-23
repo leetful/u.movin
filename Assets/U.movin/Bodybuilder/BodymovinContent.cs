@@ -515,16 +515,16 @@ namespace U.movin
 
                 if (i.ty == "st")
                 {
-                    b.strokeColor = i.c;
                     b.strokeColorSets = i.cSets != null && i.cSets.Length > 0 ? i.cSets : new BodymovinAnimatedProperties[0];
+                    b.strokeColor = i.cSets != null && i.cSets.Length > 0 ? new float[]{ i.cSets[0].s[0], i.cSets[0].s[1], i.cSets[0].s[2] } : i.c;
                     b.strokeHidden = i.hd;
                     b.strokeWidth = i.w;
                 }
 
                 if (i.ty == "fl")
                 {
-                    b.fillColor = i.c;
                     b.fillColorSets = i.cSets != null && i.cSets.Length > 0 ? i.cSets : new BodymovinAnimatedProperties[0];
+                    b.fillColor = i.cSets != null && i.cSets.Length > 0 ? new float[]{ i.cSets[0].s[0], i.cSets[0].s[1], i.cSets[0].s[2] } : i.c;
                     b.fillHidden = i.hd;
                 }
 

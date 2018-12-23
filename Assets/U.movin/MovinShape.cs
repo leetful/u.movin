@@ -47,6 +47,9 @@ namespace U.movin
         public MotionProps mstrokec;
         public MotionProps mfillc;
 
+        public Vector3 currentStrokeColor;
+        public Vector3 currentFillColor;
+
         public BodymovinAnimatedShapeProperties[] motionSet;
 
         public MovinShape()  { }
@@ -100,6 +103,9 @@ namespace U.movin
 
             Color stClr = (content.strokeColor == null) ? new Color(1, 1, 1) : new Color(content.strokeColor[0], content.strokeColor[1], content.strokeColor[2]);
             Color flClr = (content.fillColor == null) ? new Color(1, 1, 1) : new Color(content.fillColor[0], content.fillColor[1], content.fillColor[2]);
+
+            currentStrokeColor = new Vector3(stClr.r, stClr.g, stClr.b);
+            currentFillColor = new Vector3(flClr.r, flClr.g, flClr.b);
 
             fill = content.fillHidden || content.fillColor == null ? null : new SolidFill() { Color = flClr };
             stroke = content.strokeHidden || content.strokeColor == null ? null : new Stroke() { Color = stClr, HalfThickness = content.strokeWidth * movin.strokeScale };
@@ -225,6 +231,7 @@ namespace U.movin
         public void Update(float frame)
         {
             
+            
             /* ----- ANIM PROPS ----- */
 
             if (animated && !motion.completed) {
@@ -287,6 +294,7 @@ namespace U.movin
                 SetKeyframe(ref m, set, m.key + 1);
             }
 
+           
 
             /* ----- PERCENT KEYFRAME COMPLETE ----- */
 
@@ -316,7 +324,8 @@ namespace U.movin
                 }
             }
 
-            
+            //  Debug.Log("Shape anim fr:  " + frame + "    m.percent:  " + m.percent);
+
             /* ----- UPDATE MESH ----- */
 
             UpdateMesh(false);
@@ -370,7 +379,8 @@ namespace U.movin
             if (set == content.strokeColorSets) {
 
                 Color c = stroke.Color;
-                Vector3 v = Value3(m, set, ease);
+                Vector3 v = Value3(m, ease);
+                currentStrokeColor = v;
                 c.r = v.x;
                 c.g = v.y;
                 c.b = v.z;
@@ -381,7 +391,8 @@ namespace U.movin
                 //Debug.Log("diff:  " + (set[m.key].e.x - set[m.key].s.x).ToString("F4") + "   fnl:  " + (set[m.key].s + ((set[m.key].e - set[m.key].s) * ease)) + "   percent:  " + m.percent + "   ease:  " + ease);
 
                 Color c = fill.Color;
-                Vector3 v = Value3(m, set, ease);
+                Vector3 v = Value3(m, ease);
+                currentFillColor = v;
                 c.r = v.x;
                 c.g = v.y;
                 c.b = v.z;
@@ -424,10 +435,10 @@ namespace U.movin
 
 
 
-        public Vector3 Value3(MotionProps m, BodymovinAnimatedProperties[] set, float ease)
+        public Vector3 Value3(MotionProps m, float ease)
         {
             return (m.percent < 0 || m.percent > 1) ?
-                    set[m.key].s : set[m.key].s + ((set[m.key].e - set[m.key].s) * ease);
+                    m.startValue : m.startValue + ((m.endValue - m.startValue) * ease);
         }
 
         //public Vector3 Value3b(MotionProps m, BodymovinAnimatedProperties[] set, float ease)
@@ -490,7 +501,7 @@ namespace U.movin
         public void SetKeyframe(ref MotionProps prop, BodymovinAnimatedProperties[] set, int k = 0)
         {
             prop.completed = false;
-            if (prop.keys <= 0) { return; }
+            if (prop.keys <= 0 || set == null) { return; }
             if (k >= prop.keys) { k = 0; }
 
             prop.key = k;
@@ -499,13 +510,16 @@ namespace U.movin
             prop.currentOutTangent = set[k].o;
             prop.nextInTangent = set[k].i;
 
+            prop.startValue = set[k].s;
+            prop.endValue = set[k].e;
         }
 
         public void SetKeyframe(ref MotionProps prop, BodymovinAnimatedShapeProperties[] set, int k = 0)
         {
             prop.completed = false;
-            if (prop.keys <= 0) { return; }
-
+            if (prop.keys <= 0 || set == null) { return; }
+            if (k >= prop.keys) { k = 0; }
+            
             prop.key = k;
             prop.startFrame = set[k].t;
             prop.endFrame = set.Length > k ? set[k + 1].t : prop.startFrame;
@@ -543,6 +557,86 @@ namespace U.movin
             VectorUtils.FillMesh(mesh, geoms, 1.0f);
         }
 
+
+
+        /* ---- BLENDING ---- */
+
+
+        public void CreateBlendKeyframe(BodymovinShape blendContent, float duration){
+          
+            Vector2 outTangent = new Vector2(1, 1);
+            Vector2 inTangent = new Vector2(0, 0);
+
+            /* SHAPE PATH */
+          
+            animated = true; 
+            CreatePathKeyframe(ref motion, 0, duration, outTangent, inTangent, 
+                (BodyPoint[])blendContent.paths[0].points.Clone()
+            );
+
+
+            /* STROKE + FILL COLORS */
+
+            Vector3 stClr = (blendContent.strokeColor == null) ? Vector3.one : new Vector3(blendContent.strokeColor[0], blendContent.strokeColor[1], blendContent.strokeColor[2]);
+            
+            strokeColorAnimated = true;
+            CreateKeyframe(ref mstrokec, 0, duration, outTangent, inTangent, currentStrokeColor, stClr);
+
+            Vector3 flClr = (blendContent.fillColor == null) ? Vector3.one : new Vector3(blendContent.fillColor[0], blendContent.fillColor[1], blendContent.fillColor[2]);
+
+            fillColorAnimated = true;
+            CreateKeyframe(ref mfillc, 0, duration, outTangent, inTangent, currentFillColor, flClr);
+
+        }
+
+
+        public void CreateKeyframe(ref MotionProps prop, float start, float end, 
+            Vector2 outTangent, Vector2 inTangent, Vector3 startValue, Vector3 endValue, int k = 0)
+        {
+            prop.completed = false;
+            prop.keys = 1;
+
+            prop.key = k;
+            prop.startFrame = start;
+            prop.endFrame = end;
+            prop.currentOutTangent = outTangent;
+            prop.nextInTangent = inTangent;
+
+            prop.startValue = startValue;
+            prop.endValue = endValue;
+        }
+
+        public void CreatePathKeyframe(ref MotionProps prop, float start, float end, Vector2 outTangent, Vector2 inTangent, BodyPoint[] pts, int k = 0)
+        {
+            prop.completed = false;
+            prop.keys = 1;
+
+            prop.key = k;
+            prop.startFrame = start;
+            prop.endFrame = end;
+            prop.currentOutTangent = outTangent;
+            prop.nextInTangent = inTangent;
+
+            startPoints = points;
+            endPoints = pts;
+           
+        }
+
+
+        public void ChangeContents(BodymovinShape s){
+            content = s;
+
+            points = (BodyPoint[])content.paths[0].points.Clone();
+            motionSet = content.paths[0].animSets;
+
+            MotionSetup(ref animated, ref motion, motionSet);
+            MotionSetup(ref strokeColorAnimated, ref mstrokec, content.strokeColorSets);
+            MotionSetup(ref fillColorAnimated, ref mfillc, content.fillColorSets);
+
+            gameObject.name = content.item.ty + " pts: " + points.Length + "  closed: " + closed;
+            transform.localPosition = -layer.content.anchorPoint;
+            
+        }
     }
 }
  

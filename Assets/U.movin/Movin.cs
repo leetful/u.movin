@@ -16,6 +16,9 @@ namespace U.movin
 
         public Vector2 currentOutTangent;   // Current keyframe out tangent
         public Vector2 nextInTangent;       // Next keyframe in tangent
+
+        public Vector3 startValue;
+        public Vector3 endValue;
     }
 }
 
@@ -51,6 +54,12 @@ public class Movin
     public int sort;
     public VectorUtils.TessellationOptions options;
 
+
+    /* ---- EVENTS ---- */
+
+    public bool blending = false;
+    public BodymovinContent blendContent;
+    public string blendPath;
 
     /* ---- EVENTS ---- */
 
@@ -144,6 +153,11 @@ public class Movin
             //Debug.Log("****** COMP Animation done! ******");
             complete = !loop;
             OnComplete?.Invoke();
+
+            if (blending){
+                blending = false;
+                ChangeContents(blendContent, blendPath);
+            }
 
             if (loop)
             {
@@ -257,5 +271,55 @@ public class Movin
         paused = false;
     }
 
+
+
+
+    public void Blend(string path, float duration = 30f){
+        BodymovinContent blend = BodymovinContent.init(path);
+
+        loop = false;
+        totalFrames = duration;
+
+        time = 0;
+        frame = 0;
+
+        blending = true;
+        blendPath = path;
+        blendContent = blend;
+
+        for (int i = 0; i < layers.Length; i++) {
+            layers[i].CreateBlendKeyframe(blend.layers[i], duration);
+        }
+
+        Play();
+    }
+
+
+
+    public void ChangeContents(string path){
+        ChangeContents(BodymovinContent.init(path), path);
+    }
+
+    public void ChangeContents(BodymovinContent c, string path){
+        content = c;
+
+        gameObject.name = "body - " + path;
+        container.name = "container - " + path;
+        container.transform.localPosition = Vector3.zero;
+        container.transform.localPosition -= new Vector3(content.w / 2, -(content.h / 2), 0) * scale;
+
+        frameRate = content.fr;
+        totalFrames = content.op;
+
+        time = 0;
+        frame = 0;
+
+        for (int i = 0; i < layers.Length; i++) {
+            layers[i].ChangeContents(content.layers[i]);
+        }
+
+        loop = true;
+        Play();
+    }
 
 }
