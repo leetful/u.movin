@@ -284,7 +284,7 @@ namespace U.movin
 
             if (frame >= m.endFrame)
             {
-                if (m.key + 1 == set.Length - 1)
+                if (set == null || m.key + 1 == set.Length - 1)
                 {
                     m.completed = true;
                     //Debug.Log("****** Prop Animation done! ******");
@@ -428,6 +428,16 @@ namespace U.movin
             if (slaves == null) { return; }
             for (int i = 0; i < slaves.Length; i++) {
                 slaves[i].UpdateFillColor(c, true);
+            }
+        }
+
+        public void UpdateAnchor(Vector3 a)
+        {
+            transform.localPosition = -a;
+
+            if (slaves == null) { return; }
+            for (int i = 0; i < slaves.Length; i++) {
+                slaves[i].UpdateAnchor(a);
             }
         }
 
@@ -584,6 +594,14 @@ namespace U.movin
             fillColorAnimated = true;
             CreateKeyframe(ref mfillc, 0, duration, ease, currentFillColor, flClr);
 
+
+            if (slaves == null) { return; }
+            for (int i = 1; i <= slaves.Length; i++) {
+                slaves[i-1].animated = true;
+                slaves[i-1].CreatePathKeyframe(ref slaves[i-1].motion, 0, duration + 0, ease, 
+                    (BodyPoint[])blendContent.paths[i].points.Clone()
+                );
+            }
         }
 
 
@@ -630,8 +648,15 @@ namespace U.movin
             MotionSetup(ref strokeColorAnimated, ref mstrokec, content.strokeColorSets);
             MotionSetup(ref fillColorAnimated, ref mfillc, content.fillColorSets);
 
-            gameObject.name = content.item.ty + " pts: " + points.Length + "  closed: " + closed;
             transform.localPosition = -layer.content.anchorPoint;
+
+            if (slaves == null) { return; }
+            for (int i = 1; i <= slaves.Length; i++) {
+                slaves[i-1].transform.localPosition = -layer.content.anchorPoint;
+                slaves[i-1].points = (BodyPoint[])content.paths[i].points.Clone();
+                slaves[i-1].motionSet = content.paths[i].animSets;
+                slaves[i-1].MotionSetup(ref animated, ref motion, motionSet);
+            }
             
         }
     }

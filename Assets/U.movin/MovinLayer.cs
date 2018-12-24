@@ -223,13 +223,11 @@ namespace U.movin
             if (set == content.positionSets) {
                 transform.localPosition = Value3(m, ease) + positionOffset;
             } else if (set == content.anchorSets)  {
-                // transform.localScale = Value3(m, ease);
                 Vector3 v = Value3(m, ease);
                 currentAnchor = v;
 
                 for (int i = 0; i < shapes.Length; i++) {
-                    // shapes[i].UpdateOpacity(v);
-                    shapes[i].transform.localPosition = -v;
+                    shapes[i].UpdateAnchor(v);
                 }
             } else if (set == content.scaleSets)  {
                 transform.localScale = Value3(m, ease);
