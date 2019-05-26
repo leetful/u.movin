@@ -27,9 +27,7 @@ public class Movin
 {
     public GameObject gameObject;
     public GameObject container;
-
-    public Transform transform
-    {
+    public Transform transform {
         get { return gameObject.transform; }
     }
 
@@ -66,34 +64,56 @@ public class Movin
     public System.Action OnComplete;
 
 
-    public Movin(Transform parent, string path, int sort = 0, float scale = 0.1f, float strokeScale = 0.5f, bool loop = true, float quality = 0.4f)
+
+
+    public Movin(Transform parent, string path, int sort = 0, float scale = 1f, float strokeScale = 0.5f, bool loop = true, float quality = 0.4f)
     {
+        gameObject = new GameObject();
+        transform.SetParent(parent, false);
+
+        container = new GameObject();
+        container.transform.SetParent(transform, false);
+
+        MovinInit(path, sort, scale, strokeScale, loop, quality);
+
+
+        /* ----- GET FRAME UPDATES ----- */
+
+        updater = gameObject.AddComponent<Updater>();
+        updater.fired += Update;
+    }
+
+
+    private void MovinInit(string path, int sort = 0, float scale = 1f, float strokeScale = 0.5f, bool loop = true, float quality = 0.4f){
+        
+        scale *= 0.1f;  // Reduce default scale
+
+        gameObject.name = "body - " + path;
+        container.name = "container - " + path;
+
         this.loop = loop;
         this.sort = sort;
         this.scale = scale;
         this.strokeScale = strokeScale;
 
         content = BodymovinContent.init(path);
-
-        gameObject = new GameObject("body - " + path);
-        transform.SetParent(parent, false);
-       
-        container = new GameObject("container - " + path);
-        container.transform.SetParent(transform, false);
-        container.transform.localScale *= scale;
+        
+        if (content.layers == null || content.layers.Length <= 0) {  
+            Debug.Log(">>>>  NO CONTENT LAYERS, ABORT!  <<<<"); 
+            return;  
+        }
+        
+        container.transform.localScale = Vector3.one * this.scale;
         container.transform.localPosition -= new Vector3(content.w / 2, -(content.h / 2), 0) * scale;
 
         frameRate = content.fr;
         totalFrames = content.op;
         layers = new MovinLayer[content.layers.Length];
-        
-        if (content.layers.Length <= 0) { Debug.Log(">>>> NO LAYERS, ABORT..."); return; }
 
 
         /* ----- SHAPE OPTIONS ----- */
 
-        options = new VectorUtils.TessellationOptions()
-        {
+        options = new VectorUtils.TessellationOptions() {
             StepDistance = 1000.0f,
             MaxCordDeviation = 0.05f,
             MaxTanAngleDeviation = 0.05f,
@@ -105,10 +125,8 @@ public class Movin
         /* ----- CREATE LAYERS ----- */
 
         layersByIndex = new MovinLayer[content.highestLayerIndex + 1];
-        // Debug.Log("highestIndex:  "  + content.highestLayerIndex);
 
-        for (int i = 0; i < content.layers.Length; i++)
-        {
+        for (int i = 0; i < content.layers.Length; i++) {
             MovinLayer layer = new MovinLayer(this, content.layers[i], content.layers.Length - i);
             
             layers[i] = layer;
@@ -128,13 +146,7 @@ public class Movin
                 layersByIndex[p].transform.GetChild(0) : layersByIndex[p].transform, false);
         }
 
-
-        /* ----- GET FRAME UPDATES ----- */
-
-        updater = gameObject.AddComponent<Updater>();
-        updater.fired += Update;
     }
-
 
 
     private void Update()
@@ -156,7 +168,7 @@ public class Movin
 
             if (blending){
                 blending = false;
-                ChangeContents(blendContent, blendPath);
+                UpdateLayersWithContent(blendContent, blendPath);
             }
 
             if (loop)
@@ -300,11 +312,36 @@ public class Movin
 
 
 
-    public void ChangeContents(string path){
-        ChangeContents(BodymovinContent.init(path), path);
+    /*  DESTROY AND REPLACE CONTENTS  */
+
+
+    public void ClearContent(){
+        if (container == null){ return; }
+
+        for (int i = 0; i < container.transform.childCount; i++){
+            if (Application.isPlaying){
+                Object.Destroy(container.transform.GetChild(i).gameObject);
+            } else {
+                Object.DestroyImmediate(container.transform.GetChild(i).gameObject);
+            }
+        }
     }
 
-    public void ChangeContents(BodymovinContent c, string path){
+    public void ChangeContent(string path, int sort = 0, float scale = 1f, float strokeScale = 0.5f, bool loop = true, float quality = 0.4f){
+        ClearContent();
+        MovinInit(path, sort, scale, strokeScale, loop, quality);
+    } 
+
+
+
+    /*  REPLACE EXISTING LAYER CONTENT WITH NEW DATA  */
+    
+
+    public void UpdateLayersWithContent(string path){
+        UpdateLayersWithContent(BodymovinContent.init(path), path);
+    }
+
+    public void UpdateLayersWithContent(BodymovinContent c, string path){
         content = c;
 
         gameObject.name = "body - " + path;
@@ -319,7 +356,7 @@ public class Movin
         frame = 0;
 
         for (int i = 0; i < layers.Length; i++) {
-            layers[i].ChangeContents(content.layers[i]);
+            layers[i].UpdateLayersWithContent(content.layers[i]);
         }
 
         loop = true;

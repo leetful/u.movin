@@ -125,6 +125,7 @@ namespace U.movin
 
         public void Update(float frame)
         {
+            if (gameObject == null){ return; }
 
             /* ----- IN + OUT POINTS FOR LAYER ----- */
 
@@ -340,7 +341,7 @@ namespace U.movin
         }
 
 
-        public void ChangeContents(BodymovinLayer l){
+        public void UpdateLayersWithContent(BodymovinLayer l){
             content = l;
             gameObject.name = content.ind + "  " + content.nm;
 
@@ -361,7 +362,7 @@ namespace U.movin
             MotionSetup(ref opacityAnimated, ref mopacity, content.opacitySets);
            
             for (int i = 0; i < shapes.Length; i++) {
-                shapes[i].ChangeContents(l.shapes[i]);
+                shapes[i].UpdateLayersWithContent(l.shapes[i]);
             }
 
         }

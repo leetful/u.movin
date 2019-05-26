@@ -261,6 +261,7 @@ namespace U.movin
 
         public void UpdateOpacity(float opacity)
         {
+            if (!Application.isPlaying) { return; }
             if (renderer == null) return;
             
             Color c = renderer.material.color;
@@ -638,7 +639,7 @@ namespace U.movin
         }
 
 
-        public void ChangeContents(BodymovinShape s){
+        public void UpdateLayersWithContent(BodymovinShape s){
             content = s;
 
             points = (BodyPoint[])content.paths[0].points.Clone();

@@ -18,6 +18,11 @@ namespace U.movin
 
         public static BodymovinContent init(string jsonPath)
         {
+            if (Resources.Load<TextAsset>(jsonPath) == null){ 
+                Debug.Log(">>>>  JSON NOT FOUND  <<<<");
+                return new BodymovinContent(){}; 
+            }
+
             string json = Resources.Load<TextAsset>(jsonPath).text;
 
             JSONNode data = JSON.Parse(json);

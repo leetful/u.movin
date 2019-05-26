@@ -1,7 +1,7 @@
 ﻿
 using UnityEngine;
 
-public class Sample : MonoBehaviour {
+public class Samurai : MonoBehaviour {
     
     Movin samurai;
     string str = "samurai";
