@@ -43,6 +43,7 @@ public class MovinRenderer : MonoBehaviour
 
         mov = new Movin(transform, resourcePath, sortingLayer, scale, strokeSize, loop, quality);
         mov.Play();
+
     }
 
     void OnValidate() {
