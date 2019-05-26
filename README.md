@@ -55,11 +55,11 @@ The first parameter is the GameObject's transform inside which the shapes will b
 
 #### Optional parameters
 
-**Sort**: [Int] Order in layer
-**Scale**: [Float] Scale of children shapes
-**Stroke Scale**: [Float] Width of AE strokes
-**Loop**: [Bool] Does the animation loop
-**Scale**: [Float (0.01 - 1.0)] Quality of the shapes drawn (lower is better)
+**Sort [Int]**: Order in layer\n
+**Scale [Float]**: Scale of children shapes\n
+**Stroke Scale [Float]**: Width of AE strokes\n
+**Loop [Bool]**: Does the animation loop\n
+**Scale [Float (0.01 - 1.0)]**: Quality of the shapes drawn (lower is better)\n
 
 
 ## TODO
