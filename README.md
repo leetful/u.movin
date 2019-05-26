@@ -9,7 +9,7 @@ With the help of Unity's [Vector Graphics](https://docs.unity3d.com/Packages/com
 
 ![Ex1](gifs/samurai.gif)
 
-![Ex2](gifs/game.gif)
+![Ex2](gifs/game.gif)  
 
   
 ## Features
@@ -25,7 +25,7 @@ Currently supports animation for:
 - Layer scale
 - Layer opacity 
 - Blending between compositions
-- Single layer precompositions **[IN PROGRESS]**
+- Single layer precompositions **[IN PROGRESS]**  
 
 
 # Usage
@@ -34,7 +34,7 @@ Currently supports animation for:
 
 **Second**, enable [Vector Graphics](https://docs.unity3d.com/Packages/com.unity.vectorgraphics@1.0/manual/index.html) from the `Package Manager` in Unity.
 
-**Third**, add the [exported](https://www.youtube.com/watch?v=5XMUJdjI0L8) `json` to your Resources folder. 
+**Third**, add the [exported](https://www.youtube.com/watch?v=5XMUJdjI0L8) `json` to your Resources folder.   
 
 
 ## Editor
