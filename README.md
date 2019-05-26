@@ -1,9 +1,6 @@
-# u.movin
+# u.movin - Bring After Effects shape animations to Unity.
 
-
-## Unity animated vector graphics from After Effects shapes.
-
-Inspired by [Lottie](https://github.com/airbnb/lottie-web) frameworks that take animation data from After Effects to create animated vector sequences for web/mobile. With the help of the [Vector Graphics](https://docs.unity3d.com/Packages/com.unity.vectorgraphics@1.0/manual/index.html) package, this library aims to bring [the same](https://www.lottiefiles.com/) and more to Unity.
+Inspired by the [Lottie](https://github.com/airbnb/lottie-web) frameworks which take animation data from After Effects to create animated vector sequences for web/mobile/tv. With the help of the [Vector Graphics](https://docs.unity3d.com/Packages/com.unity.vectorgraphics@1.0/manual/index.html) package, this library aims to bring [the same](https://www.lottiefiles.com/) and more to Unity.
 
 ## Features
 
@@ -30,7 +27,7 @@ While not yet utilizing all AE attributes and properties, this library currently
 
 
 
-## Usage
+# Usage
 
 **First**, have the [Bodymovin extension](https://creative.adobe.com/addons/products/12557) for After Effects to export your composition.
 
@@ -39,14 +36,14 @@ While not yet utilizing all AE attributes and properties, this library currently
 **Third**, add the **json** [exported from Bodymovin](https://www.youtube.com/watch?v=5XMUJdjI0L8) to your Resources folder. 
 
 
-###### Editor
+## Editor
 
 Add a **Movin Renderer** component to your GameObject and set the **resourcePath** to point to your json file **(located under 'Resources')**
 
 ![Ex](gifs/renderer.png)
 
 
-###### Script instantiation
+## Script instantiation
 
 ```
 Movin mov = new Movin(transform, "json/samurai");
