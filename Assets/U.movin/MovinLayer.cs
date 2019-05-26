@@ -1,7 +1,7 @@
 ﻿
 using UnityEngine;
 
-namespace U.movin
+namespace u.movin
 {
     public class MovinLayer
     {

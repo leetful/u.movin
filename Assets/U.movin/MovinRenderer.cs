@@ -9,7 +9,7 @@ public class MovinRenderer : MonoBehaviour
     bool shouldUpdate = false;
 
     [SerializeField]
-    string resourcesPath = "json/";
+    string resourcePath = "json/";
 
     [SerializeField]
     float scale = 0.1f;
@@ -41,7 +41,7 @@ public class MovinRenderer : MonoBehaviour
     void RenderMovin() {
         ClearChildren();
 
-        mov = new Movin(transform, resourcesPath, sortingLayer, scale, strokeSize, loop, quality);
+        mov = new Movin(transform, resourcePath, sortingLayer, scale, strokeSize, loop, quality);
         mov.Play();
     }
 

@@ -1,9 +1,9 @@
 ﻿
 using UnityEngine;
-using U.movin;
+using u.movin;
 using Unity.VectorGraphics;
 
-namespace U.movin
+namespace u.movin
 {
     public struct MotionProps
     {

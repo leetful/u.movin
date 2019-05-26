@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using SimpleJSON;
 
-namespace U.movin
+namespace u.movin
 {
     public struct BodymovinContent
     {

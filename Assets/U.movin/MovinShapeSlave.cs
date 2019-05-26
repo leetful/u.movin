@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.VectorGraphics;
 
-namespace U.movin
+namespace u.movin
 {
     public class MovinShapeSlave : MovinShape
     {

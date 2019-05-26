@@ -1,4 +1,4 @@
-# U.movin
+# u.movin
 
 
 ## Unity animated vector graphics from After Effects shapes.
@@ -29,6 +29,7 @@ While not yet utilizing all AE attributes and properties, this library currently
 ![Ex2](gifs/game.gif)
 
 
+
 ## Usage
 
 **First**, have the [Bodymovin extension](https://creative.adobe.com/addons/products/12557) for After Effects to export your composition.
@@ -38,14 +39,21 @@ While not yet utilizing all AE attributes and properties, this library currently
 **Third**, add the **json** [exported from Bodymovin](https://www.youtube.com/watch?v=5XMUJdjI0L8) to your Resources folder. 
 
 
-###### Then get started with:
+###### Editor
+
+Add a **Movin Renderer** component to your GameObject and set the **resourcePath** to point to your json file **(located under 'Resources')**
+
+![Ex](gifs/renderer.png)
+
+
+###### Script instantiation
 
 ```
 Movin mov = new Movin(transform, "json/samurai");
 mov.Play();
 ```
 
-The first parameter is the transform that will contain the shapes, the second is the path to json file **(must be located under 'Resources')**
+The first parameter is the transform that will contain the shapes, the second is the path to json file **(located under 'Resources')**
 
 ## TODO
 

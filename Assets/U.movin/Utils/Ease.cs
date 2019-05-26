@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace U.movin
+namespace u.movin
 {
     public static class Ease
     {

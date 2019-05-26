@@ -4,7 +4,7 @@ using UnityEngine;
 using Unity.VectorGraphics;
 using UnityEngine.Rendering;
 
-namespace U.movin
+namespace u.movin
 {
     public class MovinShape
     {

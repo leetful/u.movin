@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-namespace U.movin
+namespace u.movin
 {
     public class Updater : MonoBehaviour
     {
