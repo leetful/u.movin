@@ -48,7 +48,7 @@ public class Movin
     public bool complete = false;
     public float quality;
 
-    public float strokeScale;
+    public float strokeWidth;
     public int sort;
     public VectorUtils.TessellationOptions options;
 
@@ -66,7 +66,7 @@ public class Movin
 
 
 
-    public Movin(Transform parent, string path, int sort = 0, float scale = 1f, float strokeScale = 0.5f, bool loop = true, float quality = 0.4f)
+    public Movin(Transform parent, string path, int sort = 0, float scale = 1f, float strokeWidth = 0.5f, bool loop = true, float quality = 0.4f)
     {
         gameObject = new GameObject();
         transform.SetParent(parent, false);
@@ -74,7 +74,7 @@ public class Movin
         container = new GameObject();
         container.transform.SetParent(transform, false);
 
-        MovinInit(path, sort, scale, strokeScale, loop, quality);
+        MovinInit(path, sort, scale, strokeWidth, loop, quality);
 
 
         /* ----- GET FRAME UPDATES ----- */
@@ -84,7 +84,7 @@ public class Movin
     }
 
 
-    private void MovinInit(string path, int sort = 0, float scale = 1f, float strokeScale = 0.5f, bool loop = true, float quality = 0.4f){
+    private void MovinInit(string path, int sort = 0, float scale = 1f, float strokeWidth = 0.5f, bool loop = true, float quality = 0.4f){
         
         scale *= 0.1f;  // Reduce default scale
 
@@ -94,7 +94,7 @@ public class Movin
         this.loop = loop;
         this.sort = sort;
         this.scale = scale;
-        this.strokeScale = strokeScale;
+        this.strokeWidth = strokeWidth;
 
         content = BodymovinContent.init(path);
         
@@ -327,9 +327,9 @@ public class Movin
         }
     }
 
-    public void ChangeContent(string path, int sort = 0, float scale = 1f, float strokeScale = 0.5f, bool loop = true, float quality = 0.4f){
+    public void ChangeContent(string path, int sort = 0, float scale = 1f, float strokeWidth = 0.5f, bool loop = true, float quality = 0.4f){
         ClearContent();
-        MovinInit(path, sort, scale, strokeScale, loop, quality);
+        MovinInit(path, sort, scale, strokeWidth, loop, quality);
     } 
 
 

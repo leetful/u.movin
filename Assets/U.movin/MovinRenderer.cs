@@ -18,7 +18,7 @@ public class MovinRenderer : MonoBehaviour
     int sortingLayer = 0;
 
     [SerializeField]
-    float strokeSize = 0.5f;
+    float strokeWidth = 0.5f;
 
     [SerializeField]
     bool loop = true;
@@ -41,7 +41,7 @@ public class MovinRenderer : MonoBehaviour
     void RenderMovin() {
         ClearChildren();
 
-        mov = new Movin(transform, resourcePath, sortingLayer, scale, strokeSize, loop, quality);
+        mov = new Movin(transform, resourcePath, sortingLayer, scale, strokeWidth, loop, quality);
         mov.Play();
 
     }

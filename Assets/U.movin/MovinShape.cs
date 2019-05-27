@@ -108,7 +108,7 @@ namespace u.movin
             currentFillColor = new Vector3(flClr.r, flClr.g, flClr.b);
 
             fill = content.fillHidden || content.fillColor == null ? null : new SolidFill() { Color = flClr };
-            stroke = content.strokeHidden || content.strokeColor == null ? null : new Stroke() { Color = stClr, HalfThickness = content.strokeWidth * movin.strokeScale };
+            stroke = content.strokeHidden || content.strokeColor == null ? null : new Stroke() { Color = stClr, HalfThickness = content.strokeWidth * movin.strokeWidth };
             props = new PathProperties() { Stroke = stroke };
 
             shape = new Shape() {
@@ -131,7 +131,7 @@ namespace u.movin
 
             slaves = new MovinShapeSlave[content.paths.Length - 1];
             for (int i = 1; i <= slaves.Length; i++) {
-                slaves[i - 1] = new MovinShapeSlave(this, content.paths[i], movin.strokeScale);
+                slaves[i - 1] = new MovinShapeSlave(this, content.paths[i], movin.strokeWidth);
             }
             
         }
